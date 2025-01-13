@@ -19,8 +19,8 @@ int gapWedge = 135;
 int sandWedge = 125;
 int lobWedge = 110;
 
-boolean distanceToHoleEntered = false;
-int distanceToHole = 153;
+boolean distanceToHoleEntered = true;
+int distanceToHole = 30;
 
 
 void setup()
@@ -48,6 +48,125 @@ void loop()
     int gapWedgeDist = abs(gapWedge - distanceToHole);
     int sandWedgeDist = abs(sandWedge - distanceToHole);
     int lobWedgeDist = abs(lobWedge - distanceToHole);
+
+    int distances[] = {
+      driverDist,
+      threeWoodDist,
+      threeIronDist,
+      fourIronDist,
+      fiveIronDist,
+      sixIronDist,
+      sevenIronDist,
+      eightIronDist,
+      nineIronDist,
+      pWedgeDist,
+      gapWedgeDist,
+      sandWedgeDist,
+      lobWedgeDist
+    };
+    
+ 
+    int clubSuggestion = findMinimum(distances, 13);
+    
+
+    if (clubSuggestion == driverDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("Driver: " + String(driver)); 
+    }
+    else if (clubSuggestion == threeWoodDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("3 Wood: " + String(threeWood)); 
+    }
+    else if (clubSuggestion == threeIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("3 Iron: " + String(threeIron)); 
+    }
+    else if (clubSuggestion == fourIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("4 Iron: " + String(fourIron)); 
+    }
+    else if (clubSuggestion == fiveIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("5 Iron: " + String(fiveIron)); 
+    }
+    else if (clubSuggestion == sixIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("6 Iron: " + String(sixIron)); 
+    }
+    else if (clubSuggestion == sevenIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("7 Iron: " + String(sevenIron)); 
+    }
+    else if (clubSuggestion == eightIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("8 Iron: " + String(eightIron)); 
+    }
+    else if (clubSuggestion == nineIronDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("9 Iron: " + String(nineIron)); 
+    }
+    else if (clubSuggestion == pWedgeDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("P Wedge: " + String(pWedge)); 
+    }
+    else if (clubSuggestion == gapWedgeDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("G Wedge: " + String(gapWedge)); 
+    }
+    else if (clubSuggestion == sandWedgeDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("S Wedge: " + String(sandWedge)); 
+    }
+    else if (clubSuggestion == lobWedgeDist) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Suggestion:");
+      lcd.setCursor(0,1);
+      lcd.print("L Wedge: " + String(lobWedge)); 
+    }
+
+
+
+    delay(5000);
+    distanceToHoleEntered = false;
+    lcd.clear();
+    
     
     
   }
@@ -59,4 +178,16 @@ void loop()
   }
 
   delay(500); // prevent overheating
+}
+
+
+// Function for finding the min distance
+int findMinimum(int values[], int size) {
+    int minValue = values[0];
+    for (int i = 1; i < size; i++) {
+        if (values[i] < minValue) {
+            minValue = values[i];
+        }
+    }
+    return minValue;
 }
