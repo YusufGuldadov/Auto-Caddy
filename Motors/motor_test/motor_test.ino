@@ -9,6 +9,7 @@
 
 #include<math.h>
 
+// The left motor is A, right motor is B
 // Motor Connections (All must use PWM pins)
 #define IN1A 3
 #define IN1B 5
@@ -76,21 +77,25 @@ void setMotorSpeeds(float leftSpeed, float rightSpeed) {
 }
 
 
+int speedToPWM(int speed){
+  return speed;
+}
+
 
 void moveCaddy() {
-  float speedRPM = 50 * speedValue;    // 167 RPM / 1 km/hr
+  float speedPWM = 50 * speedValue;    // 167 RPM / 1 km/hr
   double angleRad = angle * M_PI / 180.0; // Convert degrees to radians
-  float decrement = sin(abs(angleRad)) * speedRPM;   // This is how much one wheel will slow down to turn
+  float decrement = sin(abs(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
   
 
   if (angle == 0) {
-    setMotorSpeeds(speedRPM, speedRPM);
+    setMotorSpeeds(speedPWM, speedPWM);
   }
   else if (angle < 0) {
-    setMotorSpeeds(speedRPM - decrement, speedRPM);
+    setMotorSpeeds(speedPWM - decrement, speedPWM);
   }
   else {
-    setMotorSpeeds(speedRPM, speedRPM - decrement);
+    setMotorSpeeds(speedPWM, speedPWM - decrement);
   }
 
 }
@@ -111,17 +116,21 @@ void moveCaddy() {
 
 void loop() {
 
+//  speedValue = 4;
+//  angle = 0;
+//  moveCaddy();
+//  delay(2000);
   
   for (int i = -90; i < 90; i++) {
-    Serial.print(i);
+    // Serial.print(i);
     
-    speedValue = 1;
+    speedValue = 4;
     angle = i;
     moveCaddy();
-    delay(20);
+    delay(100);
     
   }
-//  delay(3000);/
+  delay(3000);
 
 //    // Constant speed going forward
 //    digitalWrite(IN1A, LOW);
