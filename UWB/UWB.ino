@@ -1,22 +1,24 @@
-#include <SoftwareSerial.h>
+
 #include <string.h>
 
-const int resetPin = 50;
+const byte resetPin = 50;
 
-unsigned long previousMillis = 0; // Store the last time the command was executed
-const long interval = 100; // Interval to query distance (milliseconds)
+long dists[] = {15, 15};
 
-void checkSerial(Stream &serialPort, String &s) {
+void checkSerial(Stream &serialPort, String &s, byte anchorNum) {
+
   if (serialPort.available()) {
-    s = serialPort.readString();
+    s = serialPort.readStringUntil('\n'); // Leer la respuesta del módulo
+    //Serial.println(s);
 
-    if(s.startsWith("+OK\r\n+ANCHOR_RCV")){
-      int dist = 0;
-      parseDistance(s, dist);
+    if(s.startsWith("+ANCHOR_RCV")){
+      //Serial.println(s);
+
+      dists[anchorNum] = s.substring(s.lastIndexOf(',') + 1).toInt(); // Obtener la distancia
       
-      Serial.println(dist);
+      //Serial.println(dists[anchorNum]);
     } else {
-      Serial.println(s);
+      //Serial.println(s);
     }
     
     
@@ -29,77 +31,10 @@ void sendSerialData(Stream &serialPort, String &command) {
 
 void resetDevice() {
   digitalWrite(resetPin, LOW);  // Set the pin low to trigger the reset
-  delay(50);                    // Wait for 50 ms (adjust as needed for your device)
+  delay(100);                    // Wait for 50 ms (adjust as needed for your device)
   digitalWrite(resetPin, HIGH); // Set the pin high to release the reset
 }
 
-
-//void parseDistance(String &input, int &dist) {
-//    // Find the position of the last comma
-//    int lastComma = input.lastIndexOf(',');
-//    
-//    // If a valid comma is found
-//    if (lastComma != -1) {
-//        // Extract the substring after the last comma and remove " cm"
-//        String distanceStr = input.substring(lastComma + 1);
-//        distanceStr.trim(); // Remove any leading or trailing spaces
-//        distanceStr.replace(" cm", ""); // Remove the " cm" suffix
-//        
-//        // Convert to integer
-//        dist = distanceStr.toInt();
-//    } 
-//    else {
-//        dist = -1; // Error value if parsing fails
-//    }
-//}
-
-
-void parseDistance(const String &input, int &dist) {
-  int len = input.length();
-  int i = len - 1;
-
-  // Skip any trailing whitespace.
-  while (i >= 0 && isspace(input.charAt(i))) {
-    i--;
-  }
-
-  // Check for and skip the "cm" suffix.
-  // We expect a space before "cm" so the last 3 non-space characters should be " cm".
-  if (i >= 2 && input.charAt(i-1) == 'c' && input.charAt(i) == 'm') {
-    i -= 2; // Skip 'c' and 'm'
-    // Skip any whitespace between the number and the "cm" suffix.
-    while (i >= 0 && isspace(input.charAt(i))) {
-      i--;
-    }
-  }
-
-  // Now i is at the last digit of the number.
-  int end = i;
-  // Find the start of the digit sequence.
-  while (i >= 0 && isDigit(input.charAt(i))) {
-    i--;
-  }
-  int start = i + 1;
-
-  // If no digit was found, return error.
-  if (start > end) {
-    dist = -1;
-    return;
-  }
-
-  // Manually convert the digit characters into an integer.
-  int number = 0;
-  for (int j = start; j <= end; j++) {
-    char c = input.charAt(j);
-    if (!isDigit(c)) { // sanity check
-      dist = -1;
-      return;
-    }
-    number = number * 10 + (c - '0');
-  }
-
-  dist = number;
-}
 
 
 void setup() {
@@ -157,11 +92,12 @@ void setup() {
 //  sendSerialData(Serial3, "AT+IPR=115200");
 //  delay(200);
 
+
   Serial.println("Setup Complete\n");
 }
 
 String message;
-String command = "AT+ANCHOR_SEND=TAG001,1,T\r\n";
+String command = "AT+ANCHOR_SEND=TAG001,4,TEST\r\n";
 
 void loop() {
 
@@ -169,13 +105,15 @@ void loop() {
   // Send data from Anchor to Tag and request distance
   sendSerialData(Serial2, command);
   delay(10);
+  checkSerial(Serial2, message, 0);
+  delay(20);
 
   // Send data from Anchor to Tag and request distance
   sendSerialData(Serial3, command);
-  delay(20);
+  delay(10);
+  checkSerial(Serial3, message, 1);
+  delay(90);
 
-  // Check for incoming serial data
-  checkSerial(Serial2, message);
-  checkSerial(Serial3, message);
+  bilaterate(dists[0], dists[1]);
 
 }
