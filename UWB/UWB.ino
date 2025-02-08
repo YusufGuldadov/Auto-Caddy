@@ -5,16 +5,48 @@ const byte resetPin = 50;
 
 long dists[] = {15, 15};
 
+// Keep track of the last five readings
+long distLogs[][5] = {{100, 100, 100, 100, 100}, {100, 100, 100, 100, 100}};
+int oldestIndex0 = 0;
+int oldestIndex1 = 0;
+long lastReading0 = 100;
+long lastReading1 = 100;
+
 void checkSerial(Stream &serialPort, String &s, byte anchorNum) {
 
   if (serialPort.available()) {
-    s = serialPort.readStringUntil('\n'); // Leer la respuesta del módulo
+    s = serialPort.readStringUntil('\n'); // read the string
     //Serial.println(s);
 
     if(s.startsWith("+ANCHOR_RCV")){
       //Serial.println(s);
 
-      dists[anchorNum] = s.substring(s.lastIndexOf(',') + 1).toInt(); // Obtener la distancia
+      dists[anchorNum] = s.substring(s.lastIndexOf(',') + 1).toInt(); // Obtain the distance value
+//
+//      if (anchorNum == 0) {
+//        // Ignore outliers and sensor fluctuation
+//        if (abs(s.substring(s.lastIndexOf(',') + 1).toInt() - lastReading0) < 100 || s.substring(s.lastIndexOf(',') + 1).toInt() > 0) {
+//          distLogs[anchorNum][oldestIndex0] = s.substring(s.lastIndexOf(',') + 1).toInt();
+//          lastReading0 = distLogs[anchorNum][oldestIndex0];
+//          oldestIndex0++;
+//          if (oldestIndex0 >= 5) {
+//            oldestIndex0 = 0;
+//          }
+//        }
+//        
+//      }
+//      else {
+//        // Ignore outliers and sensor fluctuation
+//        if (abs(s.substring(s.lastIndexOf(',') + 1).toInt() - lastReading1) < 100 || s.substring(s.lastIndexOf(',') + 1).toInt() > 0) {
+//          distLogs[anchorNum][oldestIndex1] = s.substring(s.lastIndexOf(',') + 1).toInt();
+//          lastReading1 = distLogs[anchorNum][oldestIndex1];
+//          oldestIndex1++;
+//          if (oldestIndex1 >= 5) {
+//            oldestIndex1 = 0;
+//          }
+//        }     
+//      }
+      
       
       //Serial.println(dists[anchorNum]);
     } else {
@@ -24,6 +56,15 @@ void checkSerial(Stream &serialPort, String &s, byte anchorNum) {
     
   }
 }
+
+void calculateAverage() {
+  dists[0] = (distLogs[0][0] + distLogs[0][1] + distLogs[0][2] + distLogs[0][3] + distLogs[0][4])/5;
+  dists[1] = (distLogs[1][0] + distLogs[1][1] + distLogs[1][2] + distLogs[1][3] + distLogs[1][4])/5;
+  
+}
+
+
+
 
 void sendSerialData(Stream &serialPort, String &command) {
   serialPort.print(command);
@@ -104,15 +145,29 @@ void loop() {
 
   // Send data from Anchor to Tag and request distance
   sendSerialData(Serial2, command);
-  delay(10);
+  //delay(10);
   checkSerial(Serial2, message, 0);
-  delay(20);
+  checkSerial(Serial2, message, 0);
+  delay(50);
 
   // Send data from Anchor to Tag and request distance
   sendSerialData(Serial3, command);
-  delay(10);
+  //delay(10);
   checkSerial(Serial3, message, 1);
-  delay(90);
+  checkSerial(Serial3, message, 1);
+  delay(100);
+
+//  // Print out the last three readings
+//  Serial.println("PRINTING LAST THREE");
+//  for (int i = 0; i < 2; i++) {
+//    for (int j = 0; j < 5; j++) {
+//      Serial.println(distLogs[i][j]);
+//    }
+//  }
+//  Serial.println("DONE");
+
+  // Calculate average of last three readings
+//  calculateAverage();/
 
   bilaterate(dists[0], dists[1]);
 
