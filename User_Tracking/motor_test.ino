@@ -85,9 +85,10 @@ int speedToPWM(int speed){
 void moveCaddy(float speedValue, float ang) {
   Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedValue));
   
-  float speedPWM = 20 * speedValue;    // 16.7 RPM / 1 km/hr
+  float speedPWM = 30 * speedValue;    // 16.7 RPM / 1 km/hr
   double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
-  float decrement = sin(abs(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
+  float decrement = abs(cos(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
+//  float decrement = 10;
   
 
   if (ang == 90) {

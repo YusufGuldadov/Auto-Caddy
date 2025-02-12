@@ -64,7 +64,6 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
 
       // Update last time reading
       lastSample = millis();
-      Serial.println("GOT READING");
       
       
       //Serial.println(dists[anchorNum]);
@@ -171,7 +170,10 @@ void setup() {
 //  delay(200);
 //  sendSerialData(Serial2, "AT+IPR=115200");
 //  delay(200);
-  sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
+//  sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
+//  delay(200);
+//  checkSerial(Serial2, message, 0);
+  sendSerialData(Serial2, "AT+CAL=0\r\n");
   delay(200);
   checkSerial(Serial2, message, 0);
 
@@ -201,7 +203,10 @@ void setup() {
 //  delay(200);
 //  sendSerialData(Serial3, "AT+IPR=115200");
 //  delay(200);
-  sendSerialData(Serial3, "AT+CHANNEL=9\r\n");
+//  sendSerialData(Serial3, "AT+CHANNEL=9\r\n");
+//  delay(200);
+//  checkSerial(Serial3, message, 0);
+  sendSerialData(Serial3, "AT+CAL=0\r\n");
   delay(200);
   checkSerial(Serial3, message, 0);
 
@@ -239,7 +244,7 @@ void loop() {
   //delay(10);
   checkSerial(Serial2, message, 0);
   checkSerial(Serial2, message, 0);
-//  delay(10);
+  delay(50);
 
   // Send data from Anchor to Tag and request distance
   sendSerialData(Serial3, command);
@@ -312,6 +317,10 @@ void loop() {
     // Update prevAngle
     prevAngle = angle;
     
+  } else {
+    float tmp = angle;
+    angle = prevAngle;
+    //prevAngle = tmp;
   }
 
 
