@@ -1,6 +1,9 @@
 #include <Arduino.h>
 
-// Global 2D array for state representation
-bool stateArray[5][2] = {
-  {false, false}, {false, false}, {false, false}, {false, false},{false, false}
-};
+int front=0;
+int front_left=0;
+int front_right=0;
+int left=0;
+int right=0;
+int front_left_at_angle=0;
+int front_rigth_at_angle=0;
