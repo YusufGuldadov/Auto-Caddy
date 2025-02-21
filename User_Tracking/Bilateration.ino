@@ -14,9 +14,9 @@ void bilaterate(long d1, long d2) {
 //  }
 
     // Sensor positions
-    const float x1 = -15.0;
+    const float x1 = -17.0;
     const float y1 = 0.0;
-    const float x2 = 15.0;
+    const float x2 = 17.0;
     const float y2 = 0.0;
 
     // Bilateration calculations
