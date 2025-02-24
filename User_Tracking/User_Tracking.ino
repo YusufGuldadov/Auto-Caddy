@@ -68,7 +68,7 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
       
       //Serial.println(dists[anchorNum]);
     } else {
-      //Serial.println(s);
+      // Serial.println(s);
     }
     
     
@@ -142,6 +142,20 @@ void resetDevice() {
 
 
 void setup() {
+
+  // Set motor & enable connections as outputs
+  pinMode(IN1A, OUTPUT);
+  pinMode(IN1B, OUTPUT);
+  pinMode(IN2A, OUTPUT);
+  pinMode(IN2B, OUTPUT);
+
+  // Stop motors
+  analogWrite(IN1A, 0);
+  analogWrite(IN1B, 0);
+  analogWrite(IN2A, 0);
+  analogWrite(IN2B, 0);
+
+  Serial.println("Setup Complete (MOTORS)\n");
   pinMode(resetPin1, OUTPUT); // Configure the pin as an output
   digitalWrite(resetPin1, HIGH); // Ensure the pin is initially high (inactive)
   pinMode(resetPin2, OUTPUT); // Configure the pin as an output
@@ -173,9 +187,10 @@ void setup() {
 //  sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
 //  delay(200);
 //  checkSerial(Serial2, message, 0);
-  // sendSerialData(Serial2, "AT+CAL=0\r\n");
+  // sendSerialData(Serial2, "AT+CAL=10\r\n");
   // delay(200);
   // checkSerial(Serial2, message, 0);
+  // delay(200);
 
 //  // Configure Tag (Serial3)
 //  sendSerialData(Serial3, "AT+MODE=0\r\n"); // Set Tag mode
@@ -206,7 +221,7 @@ void setup() {
 //  sendSerialData(Serial3, "AT+CHANNEL=9\r\n");
 //  delay(200);
 //  checkSerial(Serial3, message, 0);
-  // sendSerialData(Serial3, "AT+CAL=0\r\n");
+  // sendSerialData(Serial3, "AT+CAL=10\r\n");
   // delay(200);
   // checkSerial(Serial3, message, 0);
 
@@ -214,19 +229,7 @@ void setup() {
 
   Serial.println("Setup Complete (UWB)\n");
 
-  // Set motor & enable connections as outputs
-  pinMode(IN1A, OUTPUT);
-  pinMode(IN1B, OUTPUT);
-  pinMode(IN2A, OUTPUT);
-  pinMode(IN2B, OUTPUT);
 
-  // Stop motors
-  analogWrite(IN1A, 0);
-  analogWrite(IN1B, 0);
-  analogWrite(IN2A, 0);
-  analogWrite(IN2B, 0);
-
-  Serial.println("Setup Complete (MOTORS)\n");
 
   // Time variables
   lastSample = 0;
@@ -264,6 +267,8 @@ void loop() {
 
   // Calculate average of last three readings
   calculateAverage();
+
+  // Serial.println(dists[0]);
 
   // Find distance and angle to target
   bilaterate(dists[0], dists[1]);

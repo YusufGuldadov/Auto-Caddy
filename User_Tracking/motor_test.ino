@@ -73,7 +73,7 @@ void setMotorSpeeds(float leftSpeed, float rightSpeed) {
   digitalWrite(IN1A, LOW);
   digitalWrite(IN1B, LOW);
   analogWrite(IN2A, leftSpeed*1.3);
-  analogWrite(IN2B, rightSpeed);
+  analogWrite(IN2B, rightSpeed*0);
 }
 
 
@@ -85,14 +85,16 @@ int speedToPWM(int speed){
 void moveCaddy(float speedValue, float ang) {
   Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedValue));
   
-  float speedPWM = 50 * speedValue;    // 16.7 RPM / 1 km/hr
+  float speedPWM = 42 * speedValue;    // 16.7 RPM / 1 km/hr
   double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
   // float decrement = abs(cos(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
   float decrement = 1/4 * (angleRad - M_PI/2)*(angleRad - M_PI/2);
 //  float decrement = 10;
-  
 
-  if (ang == 90) {
+  if (speedValue == 0) {
+    setMotorSpeeds(0, 0);
+  }
+  else if (ang == 90) {
     setMotorSpeeds(speedPWM, speedPWM);
   }
   else if (ang < 90) {
