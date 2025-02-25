@@ -1,0 +1,106 @@
+#include<math.h>
+
+// The left motor is A, right motor is B
+// Motor Connections (All must use PWM pins)
+#define LEFT 6
+#define RIGHT 9
+
+
+// Function for setting the speed to a constant value
+void setConstantSpeed(float speedVal) {
+  // Constant speed going forward
+  analogWrite(LEFT, speedVal);
+  analogWrite(RIGHT, speedVal);
+}
+
+void stopMotors() {
+  // Stop
+  analogWrite(LEFT, 0);
+  analogWrite(RIGHT, 0);
+}
+
+
+void accelerateForward(float desiredSpeed, float delayVal) {
+  for (int i = 0; i < desiredSpeed; i++) {
+    analogWrite(LEFT, i);
+    analogWrite(RIGHT, i);
+    delay(delayVal);
+  }
+}
+
+// Function for setting the speeds of each individual motor
+// The left motor is A, right motor is B
+void setMotorSpeeds(float leftSpeed, float rightSpeed) {
+  analogWrite(LEFT, leftSpeed);
+  analogWrite(RIGHT, rightSpeed);
+}
+
+
+int speedToPWM(int speed){
+  return speed;
+}
+
+
+void moveCaddy(float speedValue, int ang) {
+  // Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedValue));
+  
+  float speedPWM = 41 * speedValue;    // max value of 246 ( < 250 )
+  double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
+  // float decrement = abs(cos(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
+  float decrement = 1/4 * (angleRad - M_PI/2)*(angleRad - M_PI/2);
+//  float decrement = 10;
+
+  if (speedValue == 0) {
+    setMotorSpeeds(0, 0);
+  }
+  // else if (ang == 90) {
+  //   setMotorSpeeds(speedPWM, speedPWM);
+  // }
+  // else if (ang < 90) {
+  //   setMotorSpeeds(speedPWM - decrement, speedPWM);
+  // }
+  // else {
+  //   setMotorSpeeds(speedPWM, speedPWM - decrement);
+  // }
+
+
+  else {
+    switch(ang) {
+      case 0:
+        setMotorSpeeds(speedPWM, speedPWM * 0.7);
+        break;
+
+      case 30:
+        setMotorSpeeds(speedPWM, speedPWM * 0.8);
+        break;
+
+      case 60:
+        setMotorSpeeds(speedPWM, speedPWM * 0.9);
+        break;
+
+      case 90:
+        setMotorSpeeds(speedPWM, speedPWM);
+        break;
+
+      case 120:
+        setMotorSpeeds(speedPWM * 0.9, speedPWM);
+        break;
+
+      case 150:
+        setMotorSpeeds(speedPWM * 0.8, speedPWM);
+        break;
+
+      case 180:
+        setMotorSpeeds(speedPWM * 0.7, speedPWM);
+        break;
+
+      default:
+        setMotorSpeeds(0, 0);
+        break;
+
+    }
+  }
+
+}
+
+
