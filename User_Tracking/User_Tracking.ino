@@ -1,19 +1,19 @@
 
 #include <string.h>
 
-#define IN1A 3
-#define IN1B 5
-#define IN2A 6
-#define IN2B 9
+#define LEFT 6    // Motor 1 on driver
+#define RIGHT 9   // Motor 2 on driver
 
 float distance, angle, speedVal;
+const float maxSpeed = 6;     // in km/hr
 float prevAngle = 90;
 
 const byte resetPin1 = 50;
 const byte resetPin2 = 52;
 
 long dists[] = {15, 15};
-const int samples = 10;
+const int samples = 5;
+const int anchorCount = 2;
 
 unsigned long lastSample, currentTime;
 
@@ -21,7 +21,7 @@ String message;
 String command = "AT+ANCHOR_SEND=TAG001,4,TEST\r\n";
 
 // Keep track of the last ten readings
-long distLogs[][samples] = {{100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}};
+long distLogs[anchorCount][samples];// = {{100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}};
 int oldestIndex0 = 0;
 int oldestIndex1 = 0;
 long lastReading0 = 100;
@@ -75,52 +75,54 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
   }
 }
 
-//void calculateAverage() {
-//  dists[0] = (distLogs[0][0]);
-//  dists[1] = (distLogs[1][0]);
-//  for (int i = 1; i < samples; i++){
-//    dists[0] += distLogs[0][i];
-//    dists[1] += distLogs[1][i];
-//  }
-//
-//    dists[0]/= samples;
-//    dists[1]/= samples;
-//  
-//}
 
 
 void calculateAverage() {
-  for (int axis = 0; axis < 2; axis++) {
-    float sum = 0, mean = 0, sd = 0;
-    int validCount = 0;
-
-    // Step 1: Compute the mean
+  for (int axis = 0; axis < anchorCount; axis++) {
+    float sum = 0, mean = 0;
     for (int i = 0; i < samples; i++) {
       sum += distLogs[axis][i];
     }
     mean = sum / samples;
 
-    // Step 2: Compute standard deviation
-    sum = 0;
-    for (int i = 0; i < samples; i++) {
-      sum += (distLogs[axis][i] - mean) * (distLogs[axis][i] - mean);
-    }
-    sd = sqrt(sum / samples);
-
-    // Step 3: Filter out outliers (keep values within 2× SD of the mean)
-    sum = 0;
-    validCount = 0;
-    for (int i = 0; i < samples; i++) {
-      if (abs(distLogs[axis][i] - mean) <= 2 * sd) {
-        sum += distLogs[axis][i];
-        validCount++;
-      }
-    }
-
-    // Step 4: Compute new average (if no valid values, fallback to original mean)
-    dists[axis] = (validCount > 0) ? (sum / validCount) : mean;
+    dists[axis] = mean;
   }
 }
+
+// void calculateAverage() {
+//   for (int axis = 0; axis < 2; axis++) {
+//     float sum = 0, mean = 0, sd = 0;
+//     int validCount = 0;
+
+//     // Step 1: Compute the mean
+//     for (int i = 0; i < samples; i++) {
+//       sum += distLogs[axis][i];
+//     }
+//     mean = sum / samples;
+
+//     // Step 2: Compute standard deviation
+//     sum = 0;
+//     for (int i = 0; i < samples; i++) {
+//       sum += (distLogs[axis][i] - mean) * (distLogs[axis][i] - mean);
+//     }
+//     sd = sqrt(sum / samples);
+
+//     // Step 3: Filter out outliers (keep values within 2× SD of the mean)
+//     sum = 0;
+//     validCount = 0;
+//     for (int i = 0; i < samples; i++) {
+//       if (abs(distLogs[axis][i] - mean) <= 2 * sd) {
+//         sum += distLogs[axis][i];
+//         validCount++;
+//       }
+//     }
+
+//     // Step 4: Compute new average (if no valid values, fallback to original mean)
+//     dists[axis] = (validCount > 0) ? (sum / validCount) : mean;
+//   }
+// }
+
+
 
 
 
@@ -143,17 +145,22 @@ void resetDevice() {
 
 void setup() {
 
+  // Initalise Logs
+  for(int anchorIdx = 0; anchorIdx < anchorCount; anchorIdx++){
+    for(int dist : distLogs[anchorIdx]){
+      dist = 100;
+    }
+  }
+
   // Set motor & enable connections as outputs
-  pinMode(IN1A, OUTPUT);
-  pinMode(IN1B, OUTPUT);
-  pinMode(IN2A, OUTPUT);
-  pinMode(IN2B, OUTPUT);
+  pinMode(LEFT, OUTPUT);
+  pinMode(RIGHT, OUTPUT);
 
   // Stop motors
-  analogWrite(IN1A, 0);
-  analogWrite(IN1B, 0);
-  analogWrite(IN2A, 0);
-  analogWrite(IN2B, 0);
+  analogWrite(LEFT, 0);
+  analogWrite(RIGHT, 0);
+  // digitalWrite(LEFT, LOW);
+  // digitalWrite(RIGHT, LOW);
 
   Serial.println("Setup Complete (MOTORS)\n");
   pinMode(resetPin1, OUTPUT); // Configure the pin as an output
@@ -172,25 +179,25 @@ void setup() {
   delay(100);
 
   // Configure Anchor (Serial2)
-//  sendSerialData(Serial2, "AT+MODE=1\r\n"); // Set Anchor mode
-//  delay(200);
-//  sendSerialData(Serial2, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
-//  delay(200);
-//  sendSerialData(Serial2, "AT+ADDRESS=ANCHOR01\r\n"); // Set Anchor address
-//  delay(200);
-//  sendSerialData(Serial2, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
-//  delay(200);
-//  sendSerialData(Serial2, "AT+BANDWIDTH=1\r\n");
-//  delay(200);
-//  sendSerialData(Serial2, "AT+IPR=115200"\r\n);
-//  delay(200);
-//  sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
-//  delay(200);
-//  checkSerial(Serial2, message, 0);
-  // sendSerialData(Serial2, "AT+CAL=10\r\n");
-  // delay(200);
-  // checkSerial(Serial2, message, 0);
-  // delay(200);
+ sendSerialData(Serial2, "AT+MODE=1\r\n"); // Set Anchor mode
+ delay(200);
+ sendSerialData(Serial2, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
+ delay(200);
+ sendSerialData(Serial2, "AT+ADDRESS=ANCHOR01\r\n"); // Set Anchor address
+ delay(200);
+ sendSerialData(Serial2, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
+ delay(200);
+ sendSerialData(Serial2, "AT+BANDWIDTH=1\r\n");
+ delay(200);
+ sendSerialData(Serial2, "AT+IPR=115200\r\n");
+ delay(200);
+ sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
+ delay(200);
+ checkSerial(Serial2, message, 0);
+  sendSerialData(Serial2, "AT+CAL=10\r\n");
+  delay(200);
+  checkSerial(Serial2, message, 0);
+  delay(200);
 
 //  // Configure Tag (Serial3)
 //  sendSerialData(Serial3, "AT+MODE=0\r\n"); // Set Tag mode
@@ -206,24 +213,24 @@ void setup() {
 //  sendSerialData(Serial3, "AT+IPR=115200\r\n");
 //  delay(1000);
 
-//  sendSerialData(Serial3, "AT+MODE=1\r\n"); // Set Anchor mode
-//  delay(200);
-//  sendSerialData(Serial3, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
-//  delay(200);
-//  sendSerialData(Serial3, "AT+ADDRESS=ANCHOR02\r\n"); // Set Anchor address
-//  delay(200);
-//  sendSerialData(Serial3, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
-//  delay(200);
-//  sendSerialData(Serial3, "AT+BANDWIDTH=1\r\n"); 
-//  delay(200);
-//  sendSerialData(Serial3, "AT+IPR=115200\r\n");
-//  delay(200);
-//  sendSerialData(Serial3, "AT+CHANNEL=9\r\n");
-//  delay(200);
-//  checkSerial(Serial3, message, 0);
-  // sendSerialData(Serial3, "AT+CAL=10\r\n");
-  // delay(200);
-  // checkSerial(Serial3, message, 0);
+ sendSerialData(Serial3, "AT+MODE=1\r\n"); // Set Anchor mode
+ delay(200);
+ sendSerialData(Serial3, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
+ delay(200);
+ sendSerialData(Serial3, "AT+ADDRESS=ANCHOR02\r\n"); // Set Anchor address
+ delay(200);
+ sendSerialData(Serial3, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
+ delay(200);
+ sendSerialData(Serial3, "AT+BANDWIDTH=1\r\n"); 
+ delay(200);
+ sendSerialData(Serial3, "AT+IPR=115200\r\n");
+ delay(200);
+ sendSerialData(Serial3, "AT+CHANNEL=9\r\n");
+ delay(200);
+ checkSerial(Serial3, message, 0);
+  sendSerialData(Serial3, "AT+CAL=10\r\n");
+  delay(200);
+  checkSerial(Serial3, message, 0);
 
 
 
@@ -291,34 +298,6 @@ void loop() {
       angle = 180;
     } 
 
-//    if(angle < 7.5) {
-//      angle = 0;
-//    } else if(angle < 22.5) {
-//      angle = 15;
-//    } else if(angle < 37.5) {
-//      angle = 30;
-//    } else if(angle < 52.5) {
-//      angle = 45;
-//    } else if(angle < 67.5) {
-//      angle = 60;
-//    } else if(angle < 82.5) {
-//      angle = 75;
-//    } else if(angle < 97.5) {
-//      angle = 90;
-//    } else if(angle < 112.5) {
-//      angle = 105;
-//    } else if(angle < 127.5) {
-//      angle = 120;
-//    } else if(angle < 142.5) {
-//      angle = 135;
-//    } else if(angle < 157.5) {
-//      angle = 150;
-//    } else if(angle < 172.5) {
-//      angle = 165;
-//    } else {
-//      angle = 180;
-//    } 
-
     // Update prevAngle
     prevAngle = angle;
     
@@ -340,6 +319,6 @@ void loop() {
   
   
   // Move toward target
-  moveCaddy(speedVal, angle);
+  moveCaddy(speedVal, (int)angle);
 
 }
