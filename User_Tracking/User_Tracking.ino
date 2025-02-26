@@ -12,7 +12,7 @@ const byte resetPin1 = 50;
 const byte resetPin2 = 52;
 
 long dists[] = {15, 15};
-const int samples = 5;
+const int samples = 10;
 const int anchorCount = 2;
 
 unsigned long lastSample, currentTime;
@@ -298,6 +298,18 @@ void loop() {
       angle = 180;
     } 
 
+    // if(angle < 15) {
+    //   angle = 0;
+    // } else if(angle < 45) {
+    //   angle = 30;
+    // } else if(angle < 135) {
+    //   angle = 90;
+    // } else if(angle < 165) {
+    //   angle = 150;
+    // } else {
+    //   angle = 180;
+    // } 
+
     // Update prevAngle
     prevAngle = angle;
     
@@ -312,6 +324,9 @@ void loop() {
   currentTime = millis();
   if (distance > 100 && (currentTime - lastSample) < 2000) {
     speedVal = distance / 100;
+    if (speedVal > 3) {
+      speedVal = 3;
+    }
   }
   else {
     speedVal = 0;

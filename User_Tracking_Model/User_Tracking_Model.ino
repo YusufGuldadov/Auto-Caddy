@@ -12,13 +12,13 @@ const byte resetPin1 = 50;
 const byte resetPin2 = 52;
 
 long dists[] = {15, 15};
-const int samples = 5;
+const int samples = 10;
 const int anchorCount = 2;
 
 unsigned long lastSample, currentTime;
 
 String message;
-String command = "AT+ANCHOR_SEND=TAG002,4,TEST\r\n";
+String command = "AT+ANCHOR_SEND=TAG001,4,TEST\r\n";
 
 // Keep track of the last ten readings
 long distLogs[anchorCount][samples];// = {{100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}};
@@ -34,7 +34,7 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
     //Serial.println(s);
 
     if(s.startsWith("+ANCHOR_RCV")){
-      Serial.println(s);
+      //Serial.println(s);
 
       dists[anchorNum] = s.substring(s.lastIndexOf(',') + 1).toInt(); // Obtain the distance value
 
@@ -298,6 +298,18 @@ void loop() {
       angle = 180;
     } 
 
+    // if(angle < 15) {
+    //   angle = 0;
+    // } else if(angle < 45) {
+    //   angle = 30;
+    // } else if(angle < 135) {
+    //   angle = 90;
+    // } else if(angle < 165) {
+    //   angle = 150;
+    // } else {
+    //   angle = 180;
+    // } 
+
     // Update prevAngle
     prevAngle = angle;
     
@@ -312,13 +324,18 @@ void loop() {
   currentTime = millis();
   if (distance > 100 && (currentTime - lastSample) < 2000) {
     speedVal = distance / 100;
+    if (speedVal > 3) {
+      speedVal = 3;
+    }
   }
   else {
     speedVal = 0;
   }
   
+
+  moveCaddyRemote();
   
   // Move toward target
-  moveCaddy(speedVal, (int)angle);
+  // moveCaddy(speedVal, (int)angle);
 
 }

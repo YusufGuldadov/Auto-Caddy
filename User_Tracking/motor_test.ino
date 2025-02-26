@@ -45,9 +45,9 @@ void moveCaddy(float speedValue, int ang) {
   // Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedValue));
   
   float speedPWM = 41 * speedValue;    // max value of 246 ( < 250 )
-  double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
+  // double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
   // float decrement = abs(cos(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
-  float decrement = 1/4 * (angleRad - M_PI/2)*(angleRad - M_PI/2);
+  // float decrement = 1/4 * (angleRad - M_PI/2)*(angleRad - M_PI/2);
 //  float decrement = 10;
 
   if (speedValue == 0) {
@@ -67,15 +67,18 @@ void moveCaddy(float speedValue, int ang) {
   else {
     switch(ang) {
       case 0:
-        setMotorSpeeds(speedPWM, speedPWM * 0.7);
+        //speedPWM*=0.5;
+        setMotorSpeeds(speedPWM, speedPWM * 0.5);
         break;
 
       case 30:
-        setMotorSpeeds(speedPWM, speedPWM * 0.8);
+        //speedPWM*=0.7;
+        setMotorSpeeds(speedPWM, speedPWM * 0.7);
         break;
 
       case 60:
-        setMotorSpeeds(speedPWM, speedPWM * 0.9);
+        //speedPWM*=0.9;
+        setMotorSpeeds(speedPWM, speedPWM * 0.8);
         break;
 
       case 90:
@@ -83,15 +86,18 @@ void moveCaddy(float speedValue, int ang) {
         break;
 
       case 120:
-        setMotorSpeeds(speedPWM * 0.9, speedPWM);
-        break;
-
-      case 150:
+        //speedPWM*=0.9;
         setMotorSpeeds(speedPWM * 0.8, speedPWM);
         break;
 
-      case 180:
+      case 150:
+        //speedPWM*=0.7;
         setMotorSpeeds(speedPWM * 0.7, speedPWM);
+        break;
+
+      case 180:
+        //speedPWM*=0.5;
+        setMotorSpeeds(speedPWM * 0.5, speedPWM);
         break;
 
       default:
