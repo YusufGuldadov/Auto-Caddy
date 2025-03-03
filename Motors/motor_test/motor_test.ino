@@ -83,7 +83,7 @@ int speedToPWM(int speed){
 
 
 void moveCaddy() {
-  float speedPWM = 50 * speedValue;    // 167 RPM / 1 km/hr
+  float speedPWM = 42 * speedValue;    // 167 RPM / 1 km/hr
   double angleRad = angle * M_PI / 180.0; // Convert degrees to radians
   float decrement = sin(abs(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
   
@@ -116,21 +116,35 @@ void moveCaddy() {
 
 void loop() {
 
-//  speedValue = 4;
+  for (int i = 0; i < 5; i = i + 1) {
+    speedValue = i;
+    angle = 0;
+    moveCaddy();
+    delay(2000);
+  }
+
+  for (int i = 5; i > 0; i = i - 1) {
+    speedValue = i;
+    angle = 0;
+    moveCaddy();
+    delay(2000);
+  }
+
+//  speedValue = 2;
 //  angle = 0;
 //  moveCaddy();
 //  delay(2000);
   
-  for (int i = -90; i < 90; i++) {
-    // Serial.print(i);
+  // for (int i = -90; i < 90; i++) {
+  //   // Serial.print(i);
     
-    speedValue = 4;
-    angle = i;
-    moveCaddy();
-    delay(100);
+  //   speedValue = 4;
+  //   angle = i;
+  //   moveCaddy();
+  //   delay(100);
     
-  }
-  delay(3000);
+  // }
+  // delay(3000);
 
 //    // Constant speed going forward
 //    digitalWrite(IN1A, LOW);

@@ -7,11 +7,18 @@
 
 
 #include <string.h>
+#include <SoftwareSerial.h>
 
 #define IN1A 3
 #define IN1B 5
 #define IN2A 6
 #define IN2B 9
+
+// SoftwareSerial pins
+const byte rxPin = 2;
+const byte txPin = 3;
+
+SoftwareSerial Serial4 (rxPin, txPin);
 
 float distance, angle, speedVal;
 float prevAngle = 90;
@@ -38,6 +45,10 @@ long lastReading1 = 100;
 long lastReading2 = 100;
 
 void checkSerial(Stream &serialPort, String s, byte anchorNum) {
+
+  // Serial.println(anchorNum);
+
+  // Serial.println(s);
 
   if (serialPort.available()) {
     s = serialPort.readStringUntil('\n'); // read the string
@@ -96,7 +107,7 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
       
       //Serial.println(dists[anchorNum]);
     } else {
-      //Serial.println(s);
+      Serial.println(s);
     }
     
     
@@ -185,31 +196,38 @@ void setup() {
   Serial.begin(115200);
   Serial2.begin(115200); // Anchor0 setup on Serial2
   Serial3.begin(115200); // Tag setup on Serial3 (used for anchor 1 during program)
-  Serial1.begin(115200); // Anchor2
+  Serial1.begin(115200); 
+  Serial1.flush();
+  delay(200);
+  // SoftwareSerial init
+  pinMode(rxPin, INPUT);
+  pinMode(txPin, OUTPUT);
+  Serial4.begin(115200);
+
 
   Serial.println("Setup Start\n");
   delay(100);
 
   // Configure Anchor (Serial2)
-  sendSerialData(Serial2, "AT+MODE=1\r\n"); // Set Anchor mode
-  delay(200);
-  sendSerialData(Serial2, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
-  delay(200);
-  sendSerialData(Serial2, "AT+ADDRESS=ANCHOR01\r\n"); // Set Anchor address
-  delay(200);
-  sendSerialData(Serial2, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
-  delay(200);
-  sendSerialData(Serial2, "AT+BANDWIDTH=1\r\n");
-  delay(200);
-  sendSerialData(Serial2, "AT+IPR=115200\r\n");
-  delay(200);
-  sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
-  delay(200);
-  checkSerial(Serial2, message, 0);
-  sendSerialData(Serial2, "AT+CAL=0\r\n");
-  delay(200);
-  checkSerial(Serial2, message, 0);
-  delay(200);
+  // sendSerialData(Serial2, "AT+MODE=1\r\n"); // Set Anchor mode
+  // delay(200);
+  // sendSerialData(Serial2, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
+  // delay(200);
+  // sendSerialData(Serial2, "AT+ADDRESS=ANCHOR01\r\n"); // Set Anchor address
+  // delay(200);
+  // sendSerialData(Serial2, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
+  // delay(200);
+  // sendSerialData(Serial2, "AT+BANDWIDTH=1\r\n");
+  // delay(200);
+  // sendSerialData(Serial2, "AT+IPR=115200\r\n");
+  // delay(200);
+  // sendSerialData(Serial2, "AT+CHANNEL=9\r\n");
+  // delay(200);
+  // checkSerial(Serial2, message, 0);
+  // sendSerialData(Serial2, "AT+CAL=0\r\n");
+  // delay(200);
+  // checkSerial(Serial2, message, 0);
+  // delay(200);
 
 //  // Configure Tag (Serial3)
 //  sendSerialData(Serial3, "AT+MODE=0"); // Set Tag mode
@@ -229,7 +247,7 @@ void setup() {
   delay(200);
   sendSerialData(Serial3, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
   delay(200);
-  sendSerialData(Serial3, "AT+ADDRESS=ANCHOR02\r\n"); // Set Anchor address
+  sendSerialData(Serial3, "AT+ADDRESS=ANCHOR03\r\n"); // Set Anchor address
   delay(200);
   sendSerialData(Serial3, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
   delay(200);
@@ -246,25 +264,25 @@ void setup() {
   delay(200);
 
 
-  sendSerialData(Serial1, "AT+MODE=1\r\n"); // Set Anchor mode
-  delay(200);
-  sendSerialData(Serial1, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
-  delay(200);
-  sendSerialData(Serial1, "AT+ADDRESS=ANCHOR03\r\n"); // Set Anchor address
-  delay(200);
-  sendSerialData(Serial1, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
-  delay(200);
-  sendSerialData(Serial1, "AT+BANDWIDTH=1\r\n"); 
-  delay(200);
-  sendSerialData(Serial1, "AT+IPR=115200\r\n");
-  delay(200);
-  sendSerialData(Serial1, "AT+CHANNEL=9\r\n");
-  delay(200);
-  checkSerial(Serial1, message, 2);
-  sendSerialData(Serial1, "AT+CAL=0\r\n");
-  delay(200);
-  checkSerial(Serial1, message, 2);
-
+  // sendSerialData(Serial4, "AT+MODE=1\r\n"); // Set Anchor mode
+  // delay(200);
+  // sendSerialData(Serial4, "AT+NETWORKID=Autoca1\r\n"); // Set network ID
+  // delay(200);
+  // sendSerialData(Serial4, "AT+ADDRESS=ANCHOR02\r\n"); // Set Anchor address
+  // delay(200);
+  // sendSerialData(Serial4, "AT+CPIN=FABC0002EEDCAA90FABC0002EEDCAA90\r\n"); // Set password
+  // delay(200);
+  // sendSerialData(Serial4, "AT+BANDWIDTH=1\r\n"); 
+  // delay(200);
+  // sendSerialData(Serial4, "AT+IPR=115200\r\n");
+  // delay(200);
+  // sendSerialData(Serial4, "AT+CHANNEL=9\r\n");
+  // delay(200);
+  // checkSerial(Serial4, message, 2);
+  // sendSerialData(Serial4, "AT+CAL=0\r\n");
+  // delay(200);
+  // checkSerial(Serial4, message, 2);
+  // delay(200);
 
 
 
@@ -297,25 +315,34 @@ void loop() {
 
 
   // Send data from Anchor to Tag and request distance
-  sendSerialData(Serial2, command);
-  //delay(10);
-  checkSerial(Serial2, message, 0);
-  checkSerial(Serial2, message, 0);
-  delay(150);
+  // sendSerialData(Serial2, command);
+  // //delay(10);
+  // checkSerial(Serial2, message, 0);
+  // checkSerial(Serial2, message, 0);
+  // delay(50);
 
   // Send data from Anchor to Tag and request distance
   sendSerialData(Serial3, command);
   //delay(10);
   checkSerial(Serial3, message, 1);
   checkSerial(Serial3, message, 1);
-  delay(150);
+  delay(500);
+
+  // // Send data from Anchor to Tag and request distance
+  // sendSerialData(Serial1, command);
+  // //delay(10);
+  // checkSerial(Serial1, message, 2);
+  // checkSerial(Serial1, message, 2);
+  // delay(50);
 
   // Send data from Anchor to Tag and request distance
-  sendSerialData(Serial1, command);
-  //delay(10);
-  checkSerial(Serial1, message, 2);
-  checkSerial(Serial1, message, 2);
-  delay(80);
+  // sendSerialData(Serial4, command);
+  // delay(1000);
+  // checkSerial(Serial4, message, 2);
+  // checkSerial(Serial4, message, 2);
+  // delay(50);
+
+  // Serial.println(dists[2]);
 
 //  // Print out the last three readings
 //  Serial.println("PRINTING LAST THREE");
@@ -400,6 +427,6 @@ void loop() {
   
   
   // Move toward target
-  moveCaddy(speedVal, angle);
+  // moveCaddy(speedVal, angle);
 
 }

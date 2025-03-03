@@ -83,7 +83,7 @@ int speedToPWM(int speed){
 
 
 void moveCaddy(float speedValue, float ang) {
-  // Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedValue));
+  Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedValue));
   
   float speedPWM = 50 * speedValue;    // 16.7 RPM / 1 km/hr
   double angleRad = ang * M_PI / 180.0; // Convert degrees to radians

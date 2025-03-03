@@ -40,72 +40,78 @@ int speedToPWM(int speed){
   return speed;
 }
 
+MotionController controller(0.3, 0.3, 0.5);
+
 
 void moveCaddy(float speedValue, int ang) {
-  Serial.println("Angle: " + String(ang) + ", Speed: " + String(speedValue));
-  
+  // Serial.println("Angle: " + String(ang) + ", Speed: " + String(speedValue));
+  // Serial.println("," + String(speedValue) + "," + String(ang));
+
+
+  // auto [adjustedAngle, adjustedSpeed] = controller.getAdjustedValues(ang, speedValue);
+
   float speedPWM = 41 * speedValue;    // max value of 246 ( < 250 )
   // double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
   // float decrement = abs(cos(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
   // float decrement = 1/4 * (angleRad - M_PI/2)*(angleRad - M_PI/2);
-//  float decrement = 10;
+  float decrement = ((-1.0/10000.0)*(ang-90)*(ang-90)) + 1;
 
   if (speedValue == 0) {
     setMotorSpeeds(0, 0);
   }
-  // else if (ang == 90) {
-  //   setMotorSpeeds(speedPWM, speedPWM);
-  // }
-  // else if (ang < 90) {
-  //   setMotorSpeeds(speedPWM - decrement, speedPWM);
-  // }
-  // else {
-  //   setMotorSpeeds(speedPWM, speedPWM - decrement);
-  // }
-
-
-  else {
-    switch(ang) {
-      case 0:
-        //speedPWM*=0.5;
-        setMotorSpeeds(speedPWM, speedPWM * 0.5);
-        break;
-
-      case 30:
-        //speedPWM*=0.7;
-        setMotorSpeeds(speedPWM, speedPWM * 0.7);
-        break;
-
-      case 60:
-        //speedPWM*=0.9;
-        setMotorSpeeds(speedPWM, speedPWM * 0.8);
-        break;
-
-      case 90:
-        setMotorSpeeds(speedPWM, speedPWM);
-        break;
-
-      case 120:
-        //speedPWM*=0.9;
-        setMotorSpeeds(speedPWM * 0.8, speedPWM);
-        break;
-
-      case 150:
-        //speedPWM*=0.7;
-        setMotorSpeeds(speedPWM * 0.7, speedPWM);
-        break;
-
-      case 180:
-        //speedPWM*=0.5;
-        setMotorSpeeds(speedPWM * 0.5, speedPWM);
-        break;
-
-      default:
-        setMotorSpeeds(0, 0);
-        break;
-
-    }
+  else if (ang == 90) {
+    setMotorSpeeds(speedPWM, speedPWM);
   }
+  else if (ang < 90) {
+    setMotorSpeeds(speedPWM, speedPWM * decrement);
+  }
+  else {
+    setMotorSpeeds(speedPWM * decrement, speedPWM);
+  }
+
+
+  // else {
+  //   switch(ang) {
+  //     case 0:
+  //       //speedPWM*=0.5;
+  //       setMotorSpeeds(speedPWM, speedPWM * 0.5);
+  //       break;
+
+  //     case 30:
+  //       //speedPWM*=0.7;
+  //       setMotorSpeeds(speedPWM, speedPWM * 0.7);
+  //       break;
+
+  //     case 60:
+  //       //speedPWM*=0.9;
+  //       setMotorSpeeds(speedPWM, speedPWM * 0.8);
+  //       break;
+
+  //     case 90:
+  //       setMotorSpeeds(speedPWM, speedPWM);
+  //       break;
+
+  //     case 120:
+  //       //speedPWM*=0.9;
+  //       setMotorSpeeds(speedPWM * 0.8, speedPWM);
+  //       break;
+
+  //     case 150:
+  //       //speedPWM*=0.7;
+  //       setMotorSpeeds(speedPWM * 0.7, speedPWM);
+  //       break;
+
+  //     case 180:
+  //       //speedPWM*=0.5;
+  //       setMotorSpeeds(speedPWM * 0.5, speedPWM);
+  //       break;
+
+  //     default:
+  //       setMotorSpeeds(0, 0);
+  //       break;
+
+  //   }
+  // }
 
 }
 

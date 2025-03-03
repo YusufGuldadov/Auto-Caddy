@@ -77,50 +77,50 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
 
 
 
-void calculateAverage() {
-  for (int axis = 0; axis < anchorCount; axis++) {
-    float sum = 0, mean = 0;
-    for (int i = 0; i < samples; i++) {
-      sum += distLogs[axis][i];
-    }
-    mean = sum / samples;
-
-    dists[axis] = mean;
-  }
-}
-
 // void calculateAverage() {
-//   for (int axis = 0; axis < 2; axis++) {
-//     float sum = 0, mean = 0, sd = 0;
-//     int validCount = 0;
-
-//     // Step 1: Compute the mean
+//   for (int axis = 0; axis < anchorCount; axis++) {
+//     float sum = 0, mean = 0;
 //     for (int i = 0; i < samples; i++) {
 //       sum += distLogs[axis][i];
 //     }
 //     mean = sum / samples;
 
-//     // Step 2: Compute standard deviation
-//     sum = 0;
-//     for (int i = 0; i < samples; i++) {
-//       sum += (distLogs[axis][i] - mean) * (distLogs[axis][i] - mean);
-//     }
-//     sd = sqrt(sum / samples);
-
-//     // Step 3: Filter out outliers (keep values within 2× SD of the mean)
-//     sum = 0;
-//     validCount = 0;
-//     for (int i = 0; i < samples; i++) {
-//       if (abs(distLogs[axis][i] - mean) <= 2 * sd) {
-//         sum += distLogs[axis][i];
-//         validCount++;
-//       }
-//     }
-
-//     // Step 4: Compute new average (if no valid values, fallback to original mean)
-//     dists[axis] = (validCount > 0) ? (sum / validCount) : mean;
+//     dists[axis] = mean;
 //   }
 // }
+
+void calculateAverage() {
+  for (int axis = 0; axis < 2; axis++) {
+    float sum = 0, mean = 0, sd = 0;
+    int validCount = 0;
+
+    // Step 1: Compute the mean
+    for (int i = 0; i < samples; i++) {
+      sum += distLogs[axis][i];
+    }
+    mean = sum / samples;
+
+    // Step 2: Compute standard deviation
+    sum = 0;
+    for (int i = 0; i < samples; i++) {
+      sum += (distLogs[axis][i] - mean) * (distLogs[axis][i] - mean);
+    }
+    sd = sqrt(sum / samples);
+
+    // Step 3: Filter out outliers (keep values within 2× SD of the mean)
+    sum = 0;
+    validCount = 0;
+    for (int i = 0; i < samples; i++) {
+      if (abs(distLogs[axis][i] - mean) <= 2 * sd) {
+        sum += distLogs[axis][i];
+        validCount++;
+      }
+    }
+
+    // Step 4: Compute new average (if no valid values, fallback to original mean)
+    dists[axis] = (validCount > 0) ? (sum / validCount) : mean;
+  }
+}
 
 
 
@@ -242,6 +242,8 @@ void setup() {
   lastSample = 0;
   currentTime = 0;
 
+  Serial.println("Distance,Angle,Speed,Direction");
+
 }
 
 
@@ -261,7 +263,7 @@ void loop() {
   //delay(10);
   checkSerial(Serial3, message, 1);
   checkSerial(Serial3, message, 1);
-  delay(35);
+  // delay(35);
 
 //  // Print out the last three readings
 //  Serial.println("PRINTING LAST THREE");
@@ -280,32 +282,62 @@ void loop() {
   // Find distance and angle to target
   bilaterate(dists[0], dists[1]);
 
-  if (abs(angle - prevAngle) < 60) {
 
-    if(angle < 15) {
-      angle = 0;
-    } else if(angle < 45) {
-      angle = 30;
-    } else if(angle < 75) {
-      angle = 60;
-    } else if(angle < 105) {
-      angle = 90;
-    } else if(angle < 135) {
-      angle = 120;
-    } else if(angle < 165) {
-      angle = 150;
-    } else {
-      angle = 180;
-    } 
+
+  if (abs(angle - prevAngle) < 60) {
 
     // if(angle < 15) {
     //   angle = 0;
     // } else if(angle < 45) {
     //   angle = 30;
-    // } else if(angle < 135) {
+    // } else if(angle < 75) {
+    //   angle = 60;
+    // } else if(angle < 105) {
     //   angle = 90;
+    // } else if(angle < 135) {
+    //   angle = 120;
     // } else if(angle < 165) {
     //   angle = 150;
+    // } else {
+    //   angle = 180;
+    // } 
+    if (angle < 15) {
+        angle = 0;
+    } else if (angle < 30) {
+        angle = 15;
+    } else if (angle < 45) {
+        angle = 30;
+    } else if (angle < 60) {
+        angle = 45;
+    } else if (angle < 75) {
+        angle = 60;
+    } else if (angle < 105) {  // Making 90° window equal to the others
+        angle = 90;
+    } else if (angle < 120) {
+        angle = 105;
+    } else if (angle < 135) {
+        angle = 120;
+    } else if (angle < 150) {
+        angle = 135;
+    } else if (angle < 165) {
+        angle = 150;
+    } else {
+        angle = 180;
+    }
+
+    // if(angle > 70 && angle < 110){
+    //   angle = 90;
+    // }
+
+
+    // if(angle < 15) {
+    //   angle = 0;
+    // } else if(angle < 60) {
+    //   angle = 38;
+    // } else if(angle < 120) {
+    //   angle = 90;
+    // } else if(angle < 165) {
+    //   angle = 143;
     // } else {
     //   angle = 180;
     // } 
@@ -316,16 +348,26 @@ void loop() {
   } else {
     float tmp = angle;
     angle = prevAngle;
-    //prevAngle = tmp;
+    // prevAngle = tmp;
   }
+
+  // Serial.print(String(distance) + "," + String(angle));
 
 
   // Convert distance to a speed
   currentTime = millis();
-  if (distance > 100 && (currentTime - lastSample) < 2000) {
-    speedVal = distance / 100;
-    if (speedVal > 3) {
+  if (distance > 100 && (currentTime - lastSample) < 1000) {
+    // Start up boost
+    if (distance < 150) {
       speedVal = 3;
+    
+    }
+    else {
+      speedVal = distance / 100;
+    }
+
+    if (speedVal > 4) {
+      speedVal = 4;
     }
   }
   else {
@@ -333,9 +375,10 @@ void loop() {
   }
   
 
-  moveCaddyRemote();
+  // moveCaddyRemote();
   
   // Move toward target
-  // moveCaddy(speedVal, (int)angle);
+  moveCaddy(speedVal, (int)angle);
+  // moveCaddy(3, (int)90);
 
 }
