@@ -33,6 +33,9 @@ void setup() {
   // call user tracking stup
   userTrackingSetup();
 
+  // call ui advising setup
+  keypadLcdSetup();
+
 }
 
 void loop() {
@@ -43,6 +46,9 @@ void loop() {
 
   // motor code
   moveCaddy(speedVal, (int)angle);
+
+  //ui advising system
+  keypadLcdTask();
 
 }
 
