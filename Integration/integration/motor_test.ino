@@ -40,7 +40,7 @@ int speedToPWM(int speed){
   return speed;
 }
 
-MotionController controller(1.0, 0.2, 0.05);
+// MotionController controller(0.2, 0.5, 0.05);
 
 
 void moveCaddy(float speedValue, int ang) {
@@ -48,13 +48,15 @@ void moveCaddy(float speedValue, int ang) {
   // Serial.println("," + String(speedValue) + "," + String(ang));
 
 
-  auto [adjustedAngle, adjustedSpeed] = controller.getAdjustedValues(ang, speedValue);
+  // auto [adjustedAngle, adjustedSpeed] = controller.getAdjustedValues(ang, speedValue);
+  auto adjustedAngle = ang; 
+  auto adjustedSpeed = speedValue;
 
   float speedPWM = 41 * adjustedSpeed;    // max value of 246 ( < 250 )
   // double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
   // float decrement = abs(cos(angleRad)) * speedPWM;   // This is how much one wheel will slow down to turn
   // float decrement = 1/4 * (angleRad - M_PI/2)*(angleRad - M_PI/2);
-  float decrement = ((-1.0/10000.0)*(adjustedAngle-90)*(adjustedAngle-90)) + 1;
+  float decrement = ((-1.0/12000.0)*(adjustedAngle-90)*(adjustedAngle-90)) + 1;
 
   if (adjustedSpeed == 0) {
     setMotorSpeeds(0, 0);
@@ -68,6 +70,7 @@ void moveCaddy(float speedValue, int ang) {
   else {
     setMotorSpeeds(speedPWM * decrement, speedPWM);
   }
+
 
 
 
