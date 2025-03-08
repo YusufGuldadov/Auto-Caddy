@@ -1,18 +1,18 @@
 #include "globals.h"
 // long duration; 
 
-const int trigPin_front_left=22;
+const int trigPin_front_left=38;
 const int echoPin_front_left=13;
-const int trigPin_front=24;
+const int trigPin_front=40;
 const int echoPin_front=12;
-const int trigPin_front_right=26;
+const int trigPin_front_right=42;
 const int echoPin_front_right=11;
 
 
-const int trigPin_left=28;
+const int trigPin_left=44;
 const int echoPin_left=10;
 
-const int trigPin_right=30;
+const int trigPin_right=46;
 const int echoPin_right=9;
 
 // const int trigPin_front_left_at_angle=32;
@@ -21,13 +21,13 @@ const int echoPin_right=9;
 // const int echoPin_front_rigth_at_angle=8;
 
 
-const int led_front = 34; // Define the LED pin
-const int led_front_left = 36; // Define the LED pin
-const int led_front_right = 38; // Define the LED pin
-const int led_left=40;
-const int led_right=42;
+const int led_front_left = 39; // Define the LED pin
+const int led_front = 41; // Define the LED pin
+const int led_front_right = 43; // Define the LED pin
+const int led_left=37;
+const int led_right=45;
 
-const int temp = 44;
+// const int temp = 44;
 
 
 
@@ -44,8 +44,8 @@ void setup() {
   pinMode(echoPin_left, INPUT);  // Set echoPin as input
   pinMode(trigPin_right, OUTPUT); // Set trigPin as output
   pinMode(echoPin_right, INPUT);  // Set echoPin as input
-  pinMode(trigPin_front_left_at_angle, OUTPUT); // Set trigPin as output
-  pinMode(echoPin_front_left_at_angle, INPUT);  // Set echoPin as input
+  // pinMode(trigPin_front_left_at_angle, OUTPUT); // Set trigPin as output
+  // pinMode(echoPin_front_left_at_angle, INPUT);  // Set echoPin as input
   // pinMode(trigPin_front_rigth_at_angle, OUTPUT); // Set trigPin as output
   // pinMode(echoPin_front_rigth_at_angle, INPUT);  // Set echoPin as input
 
@@ -55,7 +55,7 @@ void setup() {
   pinMode(led_front_right, OUTPUT); // Set the LED pin as an output
   pinMode(led_left, OUTPUT); // Set the LED pin as an output
   pinMode(led_right, OUTPUT); // Set the LED pin as an output
-  pinMode(temp, OUTPUT); // Set the LED pin as an output
+  // pinMode(temp, OUTPUT); // Set the LED pin as an output
 }
 
 void loop() {
