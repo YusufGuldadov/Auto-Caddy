@@ -5,6 +5,9 @@
 #define LEFT 6
 #define RIGHT 7
 
+int currAng = 0;
+int prevAng = currAng;
+
 
 // Function for setting the speed to a constant value
 void setConstantSpeed(float speedVal) {
@@ -40,6 +43,20 @@ int speedToPWM(int speed){
   return speed;
 }
 
+float getAdjustedValue(float ang, int speedValue){
+  prevAng = currAng;
+  currAng = ang;
+
+  int currTo90 = abs(currAng - 90);
+  int prevTo90 = abs(prevAng - 90);
+
+  if((prevTo90 - currTo90) >  45){ // Caddy turning towards 90
+    return speedValue*0.6;
+  }
+
+  return speedValue;
+}
+
 // MotionController controller(0.2, 0.5, 0.05);
 
 
@@ -48,9 +65,11 @@ void moveCaddy(float speedValue, int ang) {
   // Serial.println("," + String(speedValue) + "," + String(ang));
 
 
-  // auto [adjustedAngle, adjustedSpeed] = controller.getAdjustedValues(ang, speedValue);
+
+
+  auto adjustedSpeed = getAdjustedValue(ang, speedValue);
   auto adjustedAngle = ang; 
-  auto adjustedSpeed = speedValue;
+  // auto adjustedSpeed = speedValue;
 
   float speedPWM = 41 * adjustedSpeed;    // max value of 246 ( < 250 )
   // double angleRad = ang * M_PI / 180.0; // Convert degrees to radians
