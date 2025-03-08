@@ -1,5 +1,4 @@
-#include "globals.h"
-// long duration; 
+#include "globals.h" 
 
 const int trigPin_front_left=38;
 const int echoPin_front_left=13;
@@ -26,9 +25,6 @@ const int led_front = 41; // Define the LED pin
 const int led_front_right = 43; // Define the LED pin
 const int led_left=37;
 const int led_right=45;
-
-// const int temp = 44;
-
 
 
 
