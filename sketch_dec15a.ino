@@ -1,79 +1,73 @@
-long duration; 
-int distance;
+#include "globals.h"
+// long duration; 
 
-const int trigPin=10;
-const int echoPin=11;
-
-
-#include <Servo.h>
-
-Servo myServo;
-unsigned long previousMillis = 0;
-int currentPosition = 0; // 0, 90, 180
-int stepIndex = 0;
-
-// Filter parameters
-const int REQUIRED_CONSISTENT_READINGS = 5; // Number of consistent readings required
-const float MAX_VARIATION = 0.5;           // Maximum allowed variation in cm
-const unsigned long MAX_TIME = 1500;       // Maximum time window in ms (1.5 seconds)
+const int trigPin_front_left=38;
+const int echoPin_front_left=13;
+const int trigPin_front=40;
+const int echoPin_front=12;
+const int trigPin_front_right=42;
+const int echoPin_front_right=11;
 
 
-const int ledGreen = 13; // Define the LED pin
-const int ledRed = 2; // Define the LED pin
-const int ledLeft = 3; // Define the LED pin
-const int ledRight = 4; // Define the LED pin
+const int trigPin_left=44;
+const int echoPin_left=10;
+
+const int trigPin_right=46;
+const int echoPin_right=9;
+
+// const int trigPin_front_left_at_angle=32;
+// const int echoPin_front_left_at_angle=8;
+// const int trigPin_front_rigth_at_angle=32;
+// const int echoPin_front_rigth_at_angle=8;
+
+
+const int led_front_left = 39; // Define the LED pin
+const int led_front = 41; // Define the LED pin
+const int led_front_right = 43; // Define the LED pin
+const int led_left=37;
+const int led_right=45;
+
+// const int temp = 44;
+
 
 
 void setup() {
   Serial.begin(9600);  // Initialize Serial communication
-  pinMode(trigPin, OUTPUT); // Set trigPin as output
-  pinMode(echoPin, INPUT);  // Set echoPin as input
-  myServo.attach(9);       // Attach the servo to pin 11
-  pinMode(ledGreen, OUTPUT); // Set the LED pin as an output
-  pinMode(ledRed, OUTPUT); // Set the LED pin as an output
-  pinMode(ledLeft, OUTPUT); // Set the LED pin as an output
-  pinMode(ledRight, OUTPUT); // Set the LED pin as an output
-  myServo.write(90);        // Start with the servo at 90 degrees (center)
+  pinMode(trigPin_front_left, OUTPUT); // Set trigPin as output
+  pinMode(echoPin_front_left, INPUT);  // Set echoPin as input
+  pinMode(trigPin_front, OUTPUT); // Set trigPin as output
+  pinMode(echoPin_front, INPUT);  // Set echoPin as input
+  pinMode(trigPin_front_right, OUTPUT); // Set trigPin as output
+  pinMode(echoPin_front_right, INPUT);  // Set echoPin as input
+
+  pinMode(trigPin_left, OUTPUT); // Set trigPin as output
+  pinMode(echoPin_left, INPUT);  // Set echoPin as input
+  pinMode(trigPin_right, OUTPUT); // Set trigPin as output
+  pinMode(echoPin_right, INPUT);  // Set echoPin as input
+  // pinMode(trigPin_front_left_at_angle, OUTPUT); // Set trigPin as output
+  // pinMode(echoPin_front_left_at_angle, INPUT);  // Set echoPin as input
+  // pinMode(trigPin_front_rigth_at_angle, OUTPUT); // Set trigPin as output
+  // pinMode(echoPin_front_rigth_at_angle, INPUT);  // Set echoPin as input
+
+
+  pinMode(led_front, OUTPUT); // Set the LED pin as an output
+  pinMode(led_front_left, OUTPUT); // Set the LED pin as an output
+  pinMode(led_front_right, OUTPUT); // Set the LED pin as an output
+  pinMode(led_left, OUTPUT); // Set the LED pin as an output
+  pinMode(led_right, OUTPUT); // Set the LED pin as an output
+  // pinMode(temp, OUTPUT); // Set the LED pin as an output
 }
 
 void loop() {
 
-  // digitalWrite(ledGreen, HIGH); // Turn the LED on
-  // delay(100);
-  // digitalWrite(ledRed, HIGH); // Turn the LED on  
-  // delay(100);
+checkWithUltrasonic();
 
-  // digitalWrite(ledLeft, HIGH); // Turn the LED on  
-  // delay(100);
-
-  // digitalWrite(ledRight, HIGH); // Turn the LED on   
-  // delay(100);
-
-  // digitalWrite(ledGreen, LOW);  // Turn the LED off
-  // delay(100);
-  // digitalWrite(ledRed, LOW); // Turn the LED off
-  // delay(100);
-
-  // digitalWrite(ledLeft, LOW); // Turn the LED off
-  // delay(100);
-
-  // digitalWrite(ledRight, LOW); // Turn the LED off
-  // delay(100);
-
-
-  // if ( (detectObjectFiltered() > 0) && (detectObjectFiltered() <= 30)) {  // Check if the object is within range
-  //   Serial.println("Object detected within range! Moving servo...");
-  //   turnServoToleft();  // Call the function to turn the servo
-  // }
-  // delay(10);  // Delay for stability
-
-  turnServo_scan();
-  // turnServo();
-  
 }
 
+
+
 // Task to collect distance from ultrasonic sensor
-float detectObject() {
+float detectObject(int trigPin, int echoPin) {
   // Send a 10µs pulse to trigger
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -88,103 +82,170 @@ float detectObject() {
   float distance = (duration * 0.034) / 2;
 
   // Print the distance
-  Serial.print("Distance: ");
-  Serial.println(distance);
+  // Serial.print("Distance: ");
+  // Serial.println(distance);
 
   // Return the calculated distance
   return distance;
 }
 
-// Task to turn the servo motor left and right
-void turnServo() {
-  myServo.write(0);   // Move to 0 degrees (left)
-  delay(750);         // Wait for half a second
-  myServo.write(180); // Move to 180 degrees (right)
-  delay(750);         // Wait for half a second
-  myServo.write(90);  // Return to 90 degrees (center)
-  delay(1000);         // Wait for half a second
-}
-
-void turnServo_scan() {
-  myServo.write(75); // Move to 75 degrees (left)
-  delay(250);          // Wait for a short delay
-
-  myServo.write(105); // Move to 112.5 degrees (right)
-  delay(250);           // Wait for a short delay
-
-  myServo.write(90);   // Return to 90 degrees (center)
-  delay(250);          // Wait for a short delay
-}
-
-// void turnServo_scan() {
-//   // Move smoothly from 90 degrees to 67.5 degrees
-//   for (int pos = 90; pos >= 67.5; pos -= 1) {
-//     myServo.write(pos);
-//     delay(15); // Adjust delay for smoothness (lower for smoother motion)
-//   }
-
-//   // Move smoothly from 67.5 degrees to 112.5 degrees
-//   for (int pos = 67.5; pos <= 112.5; pos += 1) {
-//     myServo.write(pos);
-//     delay(15); // Adjust delay for smoothness
-//   }
-
-//   // Move smoothly back to 90 degrees
-//   for (int pos = 112.5; pos >= 90; pos -= 1) {
-//     myServo.write(pos);
-//     delay(15); // Adjust delay for smoothness
-//   }
-// }
 
 
+// Check if there are objects within the desired range
+void checkWithUltrasonic() {
 
-// Task to turn the servo motor left and right
-void turnServoToleft() {
-  myServo.write(0);   // Move to 0 degrees (left)
-  delay(500);         // Wait for half a second
-  myServo.write(90);  // Return to 90 degrees (center)
-  delay(250);         // Wait for half a second
-}
+  float distance = detectObject(trigPin_front_left, echoPin_front_left); // Get distance from sensor
+  if (distance > 0 && distance <= 140) {
+      
+      front_left=1;
+      
+      digitalWrite(led_front_left, HIGH); // Turn the LED on 
 
-// Task to turn the servo motor left and right
-void turnServoToright() {
-  myServo.write(180); // Move to 180 degrees (right)
-  delay(250);         // Wait for half a second
-  myServo.write(90);  // Return to 90 degrees (center)
-  delay(250);
-}
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
 
-
-
-// Task to filter and return consistent distance
-float detectObjectFiltered() {
-  float lastDistance = -1;              // Previous reading
-  int consistentCount = 0;              // Count of consistent readings
-  unsigned long startTime = millis();   // Start time for the filter
-
-  while (millis() - startTime < MAX_TIME) {
-    float currentDistance = detectObject();  // Get the current distance
-
-    // Check if current distance is close enough to the last reading
-    if (abs(currentDistance - lastDistance) <= MAX_VARIATION) {
-      consistentCount++;
-    } else {
-      consistentCount = 1;  // Reset count if not consistent
+    }
+    else
+    {
+      front_left=0;
+      digitalWrite(led_front_left, LOW); // Turn the LED off 
     }
 
-    lastDistance = currentDistance;
+    delay(65); // Delay between scans
 
-    // If required consistent readings are met
-    if (consistentCount >= REQUIRED_CONSISTENT_READINGS) {
-      Serial.print("Filtered Distance: ");
-      Serial.println(currentDistance);
-      return currentDistance;
+  
+
+    
+    
+    
+    distance = detectObject(trigPin_front, echoPin_front); // Get distance from sensor
+    if (distance > 0 && distance <= 140) {
+      front=1;
+      
+      digitalWrite(led_front, HIGH); // Turn the LED on 
+      
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
+      
     }
+    else
+    {
+      front=0;
+      
+      digitalWrite(led_front, LOW); // Turn the LED off 
+    }
+    
+    delay(65); // Delay between scans
+    
+    
+    
+    
+    distance = detectObject(trigPin_front_right, echoPin_front_right); // Get distance from sensor
+    if (distance > 0 && distance <= 140) {
+      
+      front_right=1;
+      
+      digitalWrite(led_front_right, HIGH); // Turn the LED on 
+      
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
+    }
+    else
+    {
+      front_right=0;
+      
+      digitalWrite(led_front_right, LOW); // Turn the LED off
+    }
+    
+    delay(65); // Delay between scans
+    
+    
+    
+    
+    
+    
+    distance = detectObject(trigPin_left, echoPin_left); // Get distance from sensor
+    if (distance > 0 && distance <= 140) {
+      
+      left=1;
+      
+      digitalWrite(led_left, HIGH); // Turn the LED on 
+      
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
+    }
+    else
+    {
+      left=0;
+      
+      digitalWrite(led_left, LOW); // Turn the LED off
+    }
+    
+    delay(65); // Delay between scans
+    
+    
 
-    delay(100);  // Short delay between readings
+
+    distance = detectObject(trigPin_right, echoPin_right); // Get distance from sensor
+    if (distance > 0 && distance <= 140) {
+      
+      right=1;
+      
+      digitalWrite(led_right, HIGH); // Turn the LED on 
+      
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
+    }
+    else
+    {
+      right=0;
+      
+      digitalWrite(led_right, LOW); // Turn the LED off
+    }
+    
+    delay(65); // Delay between scans
+    
+    
+
+
+    // distance = detectObject(trigPin_front_rigth_at_angle, echoPin_front_rigth_at_angle); // Get distance from sensor
+    // if (distance > 0 && distance <= 120) {
+      
+    //   front_rigth_at_angle=1;
+      
+    //   digitalWrite(led_front_right, HIGH); // Turn the LED on 
+      
+    //   // Serial.print("Object detected at distance: ");
+    //   // Serial.println(distance);
+    // }
+    // else
+    // {
+    //   front_rigth_at_angle=0;
+      
+    //   digitalWrite(led_front_right, LOW); // Turn the LED off
+    // }
+    
+    // delay(100); // Delay between scans
+
+
+    
+    // distance = detectObject(trigPin_front_left_at_angle, echoPin_front_left_at_angle); // Get distance from sensor
+    // if (distance > 0 && distance <= 148) {
+      
+    //   front=1;
+      
+    //   digitalWrite(temp, HIGH); // Turn the LED on 
+      
+    //   // Serial.print("Object detected at distance: ");
+    //   // Serial.println(distance);
+      
+    // }
+    // else
+    // {
+    //   front=0;
+    //   digitalWrite(temp, LOW); // Turn the LED off 
+    // }
+    
+    // delay(65); // Delay between scans
+    
   }
-
-  return -1;  // Return -1 if no consistent readings found
-}
-
-
