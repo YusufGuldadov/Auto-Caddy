@@ -1,5 +1,5 @@
 #define LEFT 6    // Motor 1 on driver
-#define RIGHT 9   // Motor 2 on driver
+#define RIGHT 7   // Motor 2 on driver
 
 
 // USER TRACKING GLOBALS ///////////////////////////////////////////////

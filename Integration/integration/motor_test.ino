@@ -3,7 +3,7 @@
 // The left motor is A, right motor is B
 // Motor Connections (All must use PWM pins)
 #define LEFT 6
-#define RIGHT 9
+#define RIGHT 7
 
 
 // Function for setting the speed to a constant value
