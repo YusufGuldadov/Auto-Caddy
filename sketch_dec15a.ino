@@ -1,17 +1,18 @@
-#include "globals.h" 
+#include "globals.h"
+// long duration; 
 
-const int trigPin_front_left=38;
+const int trigPin_front_left=26;
 const int echoPin_front_left=13;
-const int trigPin_front=40;
+const int trigPin_front=24;
 const int echoPin_front=12;
-const int trigPin_front_right=42;
+const int trigPin_front_right=22;
 const int echoPin_front_right=11;
 
 
-const int trigPin_left=44;
+const int trigPin_left=28;
 const int echoPin_left=10;
 
-const int trigPin_right=46;
+const int trigPin_right=30;
 const int echoPin_right=9;
 
 // const int trigPin_front_left_at_angle=32;
@@ -20,11 +21,13 @@ const int echoPin_right=9;
 // const int echoPin_front_rigth_at_angle=8;
 
 
-const int led_front_left = 39; // Define the LED pin
+const int led_front_left = 35; // Define the LED pin
 const int led_front = 41; // Define the LED pin
 const int led_front_right = 43; // Define the LED pin
-const int led_left=37;
-const int led_right=45;
+const int led_left=45;
+const int led_right=37;
+
+// const int temp = 44;
 
 
 
@@ -57,8 +60,7 @@ void setup() {
 
 void loop() {
 
-
-  
+checkWithUltrasonic();
 
 }
 
@@ -90,7 +92,7 @@ float detectObject(int trigPin, int echoPin) {
 
 
 // Check if there are objects within the desired range
-void checkUltrasonic_front_left() {
+void checkWithUltrasonic() {
 
   float distance = detectObject(trigPin_front_left, echoPin_front_left); // Get distance from sensor
   if (distance > 0 && distance <= 140) {
@@ -107,23 +109,25 @@ void checkUltrasonic_front_left() {
     {
       front_left=0;
       digitalWrite(led_front_left, LOW); // Turn the LED off 
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
     }
 
     delay(65); // Delay between scans
 
-  }
+  
 
     
     
-  void checkUltrasonic_front() {
-    float distance = detectObject(trigPin_front, echoPin_front); // Get distance from sensor
+    
+    distance = detectObject(trigPin_front, echoPin_front); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       front=1;
       
       digitalWrite(led_front, HIGH); // Turn the LED on 
       
-      // Serial.print("Object detected at distance: ");
-      // Serial.println(distance);
+      Serial.print("Object detected at distance: ");
+      Serial.println(distance);
       
     }
     else
@@ -135,10 +139,10 @@ void checkUltrasonic_front_left() {
     
     delay(65); // Delay between scans
     
-  }
     
-  void checkUltrasonic_front_right() {
-    float distance = detectObject(trigPin_front_right, echoPin_front_right); // Get distance from sensor
+    
+    
+    distance = detectObject(trigPin_front_right, echoPin_front_right); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       
       front_right=1;
@@ -157,12 +161,12 @@ void checkUltrasonic_front_left() {
     
     delay(65); // Delay between scans
     
-  }
     
     
     
-  void checkUltrasonic_left() {
-    float distance = detectObject(trigPin_left, echoPin_left); // Get distance from sensor
+    
+    
+    distance = detectObject(trigPin_left, echoPin_left); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       
       left=1;
@@ -180,11 +184,11 @@ void checkUltrasonic_front_left() {
     }
     
     delay(65); // Delay between scans
-  }
+    
     
 
-  void checkUltrasonic_right() {
-    float distance = detectObject(trigPin_right, echoPin_right); // Get distance from sensor
+
+    distance = detectObject(trigPin_right, echoPin_right); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       
       right=1;
@@ -206,7 +210,7 @@ void checkUltrasonic_front_left() {
     
 
 
-    // float distance = detectObject(trigPin_front_rigth_at_angle, echoPin_front_rigth_at_angle); // Get distance from sensor
+    // distance = detectObject(trigPin_front_rigth_at_angle, echoPin_front_rigth_at_angle); // Get distance from sensor
     // if (distance > 0 && distance <= 120) {
       
     //   front_rigth_at_angle=1;
@@ -227,7 +231,7 @@ void checkUltrasonic_front_left() {
 
 
     
-    // float distance = detectObject(trigPin_front_left_at_angle, echoPin_front_left_at_angle); // Get distance from sensor
+    // distance = detectObject(trigPin_front_left_at_angle, echoPin_front_left_at_angle); // Get distance from sensor
     // if (distance > 0 && distance <= 148) {
       
     //   front=1;
