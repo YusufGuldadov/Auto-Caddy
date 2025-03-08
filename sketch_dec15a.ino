@@ -1,11 +1,11 @@
 #include "globals.h"
 // long duration; 
 
-const int trigPin_front_left=26;
+const int trigPin_front_left=22;
 const int echoPin_front_left=13;
 const int trigPin_front=24;
 const int echoPin_front=12;
-const int trigPin_front_right=22;
+const int trigPin_front_right=26;
 const int echoPin_front_right=11;
 
 
@@ -21,9 +21,9 @@ const int echoPin_right=9;
 // const int echoPin_front_rigth_at_angle=8;
 
 
-const int led_front_left = 35; // Define the LED pin
+const int led_front_left = 43; // Define the LED pin
 const int led_front = 41; // Define the LED pin
-const int led_front_right = 43; // Define the LED pin
+const int led_front_right = 35; // Define the LED pin
 const int led_left=45;
 const int led_right=37;
 
@@ -126,8 +126,8 @@ void checkWithUltrasonic() {
       
       digitalWrite(led_front, HIGH); // Turn the LED on 
       
-      Serial.print("Object detected at distance: ");
-      Serial.println(distance);
+      // Serial.print("Object detected at distance: ");
+      // Serial.println(distance);
       
     }
     else
@@ -206,48 +206,5 @@ void checkWithUltrasonic() {
     }
     
     delay(65); // Delay between scans
-    
-    
-
-
-    // distance = detectObject(trigPin_front_rigth_at_angle, echoPin_front_rigth_at_angle); // Get distance from sensor
-    // if (distance > 0 && distance <= 120) {
-      
-    //   front_rigth_at_angle=1;
-      
-    //   digitalWrite(led_front_right, HIGH); // Turn the LED on 
-      
-    //   // Serial.print("Object detected at distance: ");
-    //   // Serial.println(distance);
-    // }
-    // else
-    // {
-    //   front_rigth_at_angle=0;
-      
-    //   digitalWrite(led_front_right, LOW); // Turn the LED off
-    // }
-    
-    // delay(100); // Delay between scans
-
-
-    
-    // distance = detectObject(trigPin_front_left_at_angle, echoPin_front_left_at_angle); // Get distance from sensor
-    // if (distance > 0 && distance <= 148) {
-      
-    //   front=1;
-      
-    //   digitalWrite(temp, HIGH); // Turn the LED on 
-      
-    //   // Serial.print("Object detected at distance: ");
-    //   // Serial.println(distance);
-      
-    // }
-    // else
-    // {
-    //   front=0;
-    //   digitalWrite(temp, LOW); // Turn the LED off 
-    // }
-    
-    // delay(65); // Delay between scans
     
   }
