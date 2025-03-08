@@ -31,6 +31,7 @@ const int led_right=45;
 
 
 
+
 void setup() {
   Serial.begin(9600);  // Initialize Serial communication
   pinMode(trigPin_front_left, OUTPUT); // Set trigPin as output
@@ -60,7 +61,7 @@ void setup() {
 
 void loop() {
 
-checkWithUltrasonic();
+
 
 }
 
@@ -92,7 +93,7 @@ float detectObject(int trigPin, int echoPin) {
 
 
 // Check if there are objects within the desired range
-void checkWithUltrasonic() {
+void checkUltrasonic_front_left() {
 
   float distance = detectObject(trigPin_front_left, echoPin_front_left); // Get distance from sensor
   if (distance > 0 && distance <= 140) {
@@ -113,12 +114,12 @@ void checkWithUltrasonic() {
 
     delay(65); // Delay between scans
 
-  
+  }
 
     
     
-    
-    distance = detectObject(trigPin_front, echoPin_front); // Get distance from sensor
+  void checkUltrasonic_front() {
+    float distance = detectObject(trigPin_front, echoPin_front); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       front=1;
       
@@ -137,10 +138,10 @@ void checkWithUltrasonic() {
     
     delay(65); // Delay between scans
     
+  }
     
-    
-    
-    distance = detectObject(trigPin_front_right, echoPin_front_right); // Get distance from sensor
+  void checkUltrasonic_front_right() {
+    float distance = detectObject(trigPin_front_right, echoPin_front_right); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       
       front_right=1;
@@ -159,12 +160,12 @@ void checkWithUltrasonic() {
     
     delay(65); // Delay between scans
     
+  }
     
     
     
-    
-    
-    distance = detectObject(trigPin_left, echoPin_left); // Get distance from sensor
+  void checkUltrasonic_left() {
+    float distance = detectObject(trigPin_left, echoPin_left); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       
       left=1;
@@ -182,11 +183,11 @@ void checkWithUltrasonic() {
     }
     
     delay(65); // Delay between scans
-    
+  }
     
 
-
-    distance = detectObject(trigPin_right, echoPin_right); // Get distance from sensor
+  void checkUltrasonic_right() {
+    float distance = detectObject(trigPin_right, echoPin_right); // Get distance from sensor
     if (distance > 0 && distance <= 140) {
       
       right=1;
@@ -208,7 +209,7 @@ void checkWithUltrasonic() {
     
 
 
-    // distance = detectObject(trigPin_front_rigth_at_angle, echoPin_front_rigth_at_angle); // Get distance from sensor
+    // float distance = detectObject(trigPin_front_rigth_at_angle, echoPin_front_rigth_at_angle); // Get distance from sensor
     // if (distance > 0 && distance <= 120) {
       
     //   front_rigth_at_angle=1;
@@ -229,7 +230,7 @@ void checkWithUltrasonic() {
 
 
     
-    // distance = detectObject(trigPin_front_left_at_angle, echoPin_front_left_at_angle); // Get distance from sensor
+    // float distance = detectObject(trigPin_front_left_at_angle, echoPin_front_left_at_angle); // Get distance from sensor
     // if (distance > 0 && distance <= 148) {
       
     //   front=1;
