@@ -9,23 +9,22 @@ const int trigPin_front_right=26;
 const int echoPin_front_right=11;
 
 
-const int trigPin_left=28;
-const int echoPin_left=10;
-
-const int trigPin_right=30;
+const int trigPin_right=28;
 const int echoPin_right=9;
 
+const int trigPin_left=30;
+const int echoPin_left=10;
 // const int trigPin_front_left_at_angle=32;
 // const int echoPin_front_left_at_angle=8;
 // const int trigPin_front_rigth_at_angle=32;
 // const int echoPin_front_rigth_at_angle=8;
 
 
-const int led_front_left = 43; // Define the LED pin
-const int led_front = 41; // Define the LED pin
-const int led_front_right = 35; // Define the LED pin
-const int led_left=45;
-const int led_right=37;
+const int led_front_left = 8; // Define the LED pin
+const int led_front = 5; // Define the LED pin
+const int led_front_right = 2; // Define the LED pin
+const int led_left=4;
+const int led_right=3;
 
 // const int temp = 44;
 
@@ -101,6 +100,8 @@ void checkWithUltrasonic() {
       
       digitalWrite(led_front_left, HIGH); // Turn the LED on 
 
+      // analogWrite(led_front_left, 250);
+
       // Serial.print("Object detected at distance: ");
       // Serial.println(distance);
 
@@ -109,8 +110,9 @@ void checkWithUltrasonic() {
     {
       front_left=0;
       digitalWrite(led_front_left, LOW); // Turn the LED off 
-      // Serial.print("Object detected at distance: ");
-      // Serial.println(distance);
+
+      Serial.print("Object detected at distance: ");
+      Serial.println(distance);
     }
 
     delay(65); // Delay between scans
@@ -203,6 +205,7 @@ void checkWithUltrasonic() {
       right=0;
       
       digitalWrite(led_right, LOW); // Turn the LED off
+
     }
     
     delay(65); // Delay between scans
