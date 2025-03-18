@@ -10,10 +10,10 @@ const int echoPin_front_right=11;
 
 
 const int trigPin_right=28;
-const int echoPin_right=9;
+const int echoPin_right=10;
 
 const int trigPin_left=30;
-const int echoPin_left=10;
+const int echoPin_left=9;
 // const int trigPin_front_left_at_angle=32;
 // const int echoPin_front_left_at_angle=8;
 // const int trigPin_front_rigth_at_angle=32;
