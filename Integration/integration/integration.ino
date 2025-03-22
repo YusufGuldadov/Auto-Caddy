@@ -87,6 +87,7 @@ void loop() {
   obstacleAdjust();
   moveCaddy(speedVal, (int)angle);
   // Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedVal));
+  // moveCaddy(5, (int)90);
 
   //ui advising system
   // keypadLcdTask();

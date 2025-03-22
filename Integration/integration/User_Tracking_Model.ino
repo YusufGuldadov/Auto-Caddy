@@ -3,6 +3,7 @@
 #include "globals.h"
 
 
+
 void checkSerial(Stream &serialPort, String s, byte anchorNum) {
 
   if (serialPort.available()) {

@@ -8,6 +8,8 @@
 int currAng = 0;
 int prevAng = currAng;
 
+unsigned long lastZero;
+
 const int histSize = 5;
 
 int lastTenAngles[histSize] = {90};
@@ -58,11 +60,18 @@ struct moveValues getAdjustedValue(float ang, int speedValue){
   prevAng = currAng;
   currAng = ang;
 
+  if(speedValue == 0) lastZero = millis();
+
+  if(speedValue > 0 && (millis() - lastZero) < 5000){
+    return {6, ang};
+  }
+
+
   int currTo90 = abs(currAng - 90);
-  int prevTo90 = abs(prevAng - 90);
+  int prevTo90 = abs(prevAng - 90) ;
 
   if((prevTo90 - currTo90) >  30){ // Caddy turning towards 90
-    return {speedValue*0.6, ang};
+    return {speedValue*0.7, ang};
   }
 
 
