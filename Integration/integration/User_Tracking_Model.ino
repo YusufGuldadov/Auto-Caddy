@@ -1,7 +1,6 @@
 
 #include <string.h>
-
-
+#include "globals.h"
 
 
 
@@ -9,7 +8,7 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
 
   if (serialPort.available()) {
     s = serialPort.readStringUntil('\n'); // read the string
-    //Serial.println(s);
+    // Serial.println("Anchor" + String(anchorNum));
 
     if(s.startsWith("+ANCHOR_RCV")){
       //Serial.println(s);
@@ -55,50 +54,61 @@ void checkSerial(Stream &serialPort, String s, byte anchorNum) {
 
 
 
-// void calculateAverage() {
-//   for (int axis = 0; axis < anchorCount; axis++) {
-//     float sum = 0, mean = 0;
-//     for (int i = 0; i < samples; i++) {
-//       sum += distLogs[axis][i];
-//     }
-//     mean = sum / samples;
-
-//     dists[axis] = mean;
-//   }
-// }
-
 void calculateAverage() {
-  for (int axis = 0; axis < 2; axis++) {
-    float sum = 0, mean = 0, sd = 0;
-    int validCount = 0;
-
-    // Step 1: Compute the mean
+  for (int axis = 0; axis < anchorCount; axis++) {
+    float sum = 0, mean = 0;
     for (int i = 0; i < samples; i++) {
       sum += distLogs[axis][i];
     }
     mean = sum / samples;
 
-    // Step 2: Compute standard deviation
-    sum = 0;
-    for (int i = 0; i < samples; i++) {
-      sum += (distLogs[axis][i] - mean) * (distLogs[axis][i] - mean);
-    }
-    sd = sqrt(sum / samples);
-
-    // Step 3: Filter out outliers (keep values within 2× SD of the mean)
-    sum = 0;
-    validCount = 0;
-    for (int i = 0; i < samples; i++) {
-      if (abs(distLogs[axis][i] - mean) <= 2 * sd) {
-        sum += distLogs[axis][i];
-        validCount++;
-      }
-    }
-
-    // Step 4: Compute new average (if no valid values, fallback to original mean)
-    dists[axis] = (validCount > 0) ? (sum / validCount) : mean;
+    dists[axis] = mean;
   }
 }
+
+void calculateAverageAngle() {
+  float sum = 0, mean = 0;
+  for (int i = 0; i < samples; i++) {
+    sum += bilaterateAngles[i];
+  }
+  mean = sum / samples;
+
+  angle = mean;
+  
+}
+
+// void calculateAverage() {
+//   for (int axis = 0; axis < 2; axis++) {
+//     float sum = 0, mean = 0, sd = 0;
+//     int validCount = 0;
+
+//     // Step 1: Compute the mean
+//     for (int i = 0; i < samples; i++) {
+//       sum += distLogs[axis][i];
+//     }
+//     mean = sum / samples;
+
+//     // Step 2: Compute standard deviation
+//     sum = 0;
+//     for (int i = 0; i < samples; i++) {
+//       sum += (distLogs[axis][i] - mean) * (distLogs[axis][i] - mean);
+//     }
+//     sd = sqrt(sum / samples);
+
+//     // Step 3: Filter out outliers (keep values within 2× SD of the mean)
+//     sum = 0;
+//     validCount = 0;
+//     for (int i = 0; i < samples; i++) {
+//       if (abs(distLogs[axis][i] - mean) <= 2 * sd) {
+//         sum += distLogs[axis][i];
+//         validCount++;
+//       }
+//     }
+
+//     // Step 4: Compute new average (if no valid values, fallback to original mean)
+//     dists[axis] = (validCount > 0) ? (sum / validCount) : mean;
+//   }
+// }
 
 
 
@@ -127,6 +137,10 @@ void userTrackingSetup() {
     }
   }
 
+  for (int i = 0; i < samples; i++) {
+    bilaterateAngles[i] = 90;
+  }
+
   // Set motor & enable connections as outputs
   pinMode(LEFT, OUTPUT);
   pinMode(RIGHT, OUTPUT);
@@ -137,7 +151,7 @@ void userTrackingSetup() {
   // digitalWrite(LEFT, LOW);
   // digitalWrite(RIGHT, LOW);
 
-  Serial.println("Setup Complete (MOTORS)\n");
+  // Serial.println("Setup Complete (MOTORS)\n");
   pinMode(resetPin1, OUTPUT); // Configure the pin as an output
   digitalWrite(resetPin1, HIGH); // Ensure the pin is initially high (inactive)
   pinMode(resetPin2, OUTPUT); // Configure the pin as an output
@@ -235,7 +249,7 @@ void userTrackingTask() {
   checkSerial(Serial3, message, 1);
   delay(40);
 
-//  // Print out the last three readings
+//  // Print out the last n readings
 //  Serial.println("PRINTING LAST THREE");
 //  for (int i = 0; i < 2; i++) {
 //    for (int j = 0; j < 5; j++) {
@@ -244,14 +258,22 @@ void userTrackingTask() {
 //  }
 //  Serial.println("DONE");
 
-  // Calculate average of last three readings
-  calculateAverage();
+  // Calculate average of last n readings
+  // calculateAverage();
 
-  // Serial.println(dists[0]);
+
 
   // Find distance and angle to target
   bilaterate(dists[0], dists[1]);
 
+  bilaterateAngles[bilaterateIndex] = rawAngle;
+  bilaterateIndex++;
+  if (bilaterateIndex >= samples) {
+    bilaterateIndex = 0;
+  }
+
+  calculateAverageAngle();
+  // Serial.println(angle);
 
 
   if (abs(angle - prevAngle) < 60) {
@@ -273,47 +295,6 @@ void userTrackingTask() {
     } 
 
 
-    // if (angle < 15) {
-    //     angle = 0;
-    // } else if (angle < 30) {
-    //     angle = 15;
-    // } else if (angle < 45) {
-    //     angle = 30;
-    // } else if (angle < 60) {
-    //     angle = 45;
-    // } else if (angle < 75) {
-    //     angle = 60;
-    // } else if (angle < 105) {  // Making 90° window equal to the others
-    //     angle = 90;
-    // } else if (angle < 120) {
-    //     angle = 105;
-    // } else if (angle < 135) {
-    //     angle = 120;
-    // } else if (angle < 150) {
-    //     angle = 135;
-    // } else if (angle < 165) {
-    //     angle = 150;
-    // } else {
-    //     angle = 180;
-    // }
-
-    // if(angle > 70 && angle < 110){
-    //   angle = 90;
-    // }
-
-
-    // if(angle < 15) {
-    //   angle = 0;
-    // } else if(angle < 60) {
-    //   angle = 38;
-    // } else if(angle < 120) {
-    //   angle = 90;
-    // } else if(angle < 165) {
-    //   angle = 143;
-    // } else {
-    //   angle = 180;
-    // } 
-
     // Update prevAngle
     prevAngle = angle;
     
@@ -323,7 +304,7 @@ void userTrackingTask() {
     // prevAngle = tmp;
   }
 
-  // Serial.print(String(distance) + "," + String(angle));
+  // Serial.println(String(distance) + "," + String(angle));
 
 
   // Convert distance to a speed
@@ -338,8 +319,8 @@ void userTrackingTask() {
       speedVal = distance / 100;
     // }
 
-    if (speedVal > 4) {
-      speedVal = 4;
+    if (speedVal > 6) {
+      speedVal = 6;
     }
   }
   else {

@@ -1,8 +1,9 @@
 #include <Keypad.h>
 #include <LiquidCrystal_I2C.h>
+#include <Key.h>
 
 // LCD Configuration
-LiquidCrystal_I2C lcd(0x27, 20, 4);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Keypad Configuration
 const byte ROWS = 4;

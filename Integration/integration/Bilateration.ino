@@ -27,9 +27,9 @@ void bilaterate(long d1, long d2) {
     float y1_sol = sqrt(y_squared);
 
     // Calculate and print angle and distance for both solutions
-    angle = atan2(y1_sol, x) * (180.0 / M_PI); // Convert to degrees
+    rawAngle = atan2(y1_sol, x) * (180.0 / M_PI); // Convert to degrees
     distance = sqrt(x * x + y1_sol * y1_sol);
 
-    //Serial.println(String(angle) + ", " + String(distance));
+    // Serial.println(String(rawAngle) + ", " + String(distance));
 }
 

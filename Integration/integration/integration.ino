@@ -39,53 +39,27 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// USER TRACKING GLOBALS ///////////////////////////////////////////////
-float distance, angle, speedVal;
-const float maxSpeed = 6;     // in km/hr
-float prevAngle = 90;
-
-const byte resetPin1 = 50;
-const byte resetPin2 = 52;
-
-long dists[] = {15, 15};
-const int samples = 10;
-const int anchorCount = 2;
-
-unsigned long lastSample, currentTime;
-
-String message;
-String command = "AT+ANCHOR_SEND=TAG001,4,TEST\r\n";
-
-// Keep track of the last ten readings
-long distLogs[anchorCount][samples];// = {{100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100}};
-int oldestIndex0 = 0;
-int oldestIndex1 = 0;
-long lastReading0 = 100;
-long lastReading1 = 100;
-
-////////////////////////////////////////////////////////////////////////
-
-
 void obstacleAdjust(){
   if(angle < 45 || angle > 135){
     return;
   }
 
 
-  int map[5] = {left, front_left, front, front_right, right};
+  int obstacleMap[5] = {right, front_right, front, front_left, left};
 
-  int idx = (angle - 45) / 5;
+  int idx = angle / 36;
 
-  if(map[idx] == 1){
+
+  if(obstacleMap[idx] == 1){
     for(int i = 0; i < 5; i++){
 
-      if(map[i] == 0){
-        angle = i*5 + 45;
+      if(obstacleMap[i] == 0){
+        angle = i * 36;
 
         return;
       } 
     }
-  }
+  } else return;
 
 
   speedVal = 0;
@@ -97,7 +71,7 @@ void obstacleAdjust(){
 void setup() {
   // call user tracking stup
   userTrackingSetup();
-  // ObstacleDetectionsetup();
+  ObstacleDetectionsetup();
 
   // call ui advising setup
   // keypadLcdSetup();
@@ -105,19 +79,15 @@ void setup() {
 }
 
 void loop() {
-  // userTrackingTask();
-  // checkUltrasonic_front_left();
-  // checkUltrasonic_front_right();
 
   userTrackingTask();
-  // checkUltrasonic_front();
 
-  // userTrackingTask();
-  // checkUltrasonic_left();
-  // checkUltrasonic_right();
+  checkWithUltrasonic();
   
-  // obstacleAdjust();
+  obstacleAdjust();
   moveCaddy(speedVal, (int)angle);
+  // Serial.println("Angle: " + String(angle) + ", Speed: " + String(speedVal));
+  // moveCaddy(5, (int)90);
 
   //ui advising system
   // keypadLcdTask();
